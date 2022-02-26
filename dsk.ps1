@@ -24,14 +24,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ########################################
 ########################################
 param(
-    [switch]$Init,      #Initializes DSK
-    [switch]$Reload,    #Will reload dsk.ps1 variables
-    [switch]$ClearFW,   #Clears All temp firewall connections typically prior to a restart
-    [switch]$CloseFW,   #Close a firewall rule (Deletes it) that was opened by DSK
-    [switch]$OpenFW,    #Opens a firewall rule that was opened by DSK
-    [string]$IP,        #Variable to be passed to the firwall function
-    [string]$USER,      #Discord username of user recieving access
-    [string]$DiscordID  #Discord ID of user recieving access
+    [switch]$Init,                                                                      #Initializes DSK
+    [switch]$Reload,                                                                    #Will reload dsk.ps1 variables
+    [switch]$ClearFW,                                                                   #Clears All temp firewall connections typically prior to a restart
+    [switch]$CloseFW,                                                                   #Close a firewall rule (Deletes it) that was opened by DSK
+    [switch]$OpenFW,                                                                    #Opens a firewall rule that was opened by DSK
+    [string]$IP,                                                                        #Variable to be passed to the firwall function
+    [string]$DISCORDUSER,                                                               #Discord username of user recieving access
+    [string]$DiscordID                                                                  #Discord ID of user recieving access
 )
 ########################################
 ########################################
@@ -41,7 +41,6 @@ $OnlyDevice  = $false                                                           
 $CmdPrefix   = '$'                                                                      #The Command prefix the bot will look for when looking at a message before considering it a command
 $TimeOut     = 120                                                                      #Sets the amount of time the firewall will remain open with no incoming connection before removing firewall rules
 $DynamicIP   = $true                                                                    #Marks the internet connection as a Dynamic IP Address and will cause Node-Red to keep checking what the IP Address is
-$IPCheckTime = 600                                                                      #If DynamicIP is set to $true, this is the interval (seconds) between checks (not recommended to be set less that 600 seconds)
 
 
 #APPLICATION PATH CONFIG
@@ -210,7 +209,6 @@ Out-Report -Label "  OnlyDevice           ==" -Data $OnlyDevice -Bool
 Out-Report -Label "  CmdPrefix            ==" -Data $CmdPrefix
 Out-Report -Label "  TimeOut              ==" -Data $TimeOut
 Out-Report -Label "  DynamicIP            ==" -Data $DynamicIP
-Out-Report -Label "  IPCheckTime          ==" -Data $IPCheckTime
 write-host " "
 write-host "File Paths" -ForegroundColor "white"
 Out-Report -Label "  VNC_Path            ==" -Data $VNC_Path -CheckPath
@@ -251,7 +249,6 @@ Prepare-Config
     $DSK | Add-Member -MemberType NoteProperty -Name CmdPrefix -Value $CmdPrefix
     $DSK | Add-Member -MemberType NoteProperty -Name TimeOut -Value $TimeOut
     $DSK | Add-Member -MemberType NoteProperty -Name DynamicIP -Value $DynamicIP
-    $DSK | Add-Member -MemberType NoteProperty -Name IPCheckTime -Value $IPCheckTime
     $DSK | Add-Member -MemberType NoteProperty -Name EnableVNC -Value $EnableVNC
     $DSK | Add-Member -MemberType NoteProperty -Name EnableRDP -Value $EnableRDP
     $DSK | Add-Member -MemberType NoteProperty -Name EnableFTP -Value $EnableFTP
