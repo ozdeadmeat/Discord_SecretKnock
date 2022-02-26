@@ -1,7 +1,7 @@
 <#
 Discord Secret Knock
 Created by Josh 'OzDeaDMeaT' McDougall
-Version: v0.0005A (Initial Alpha Release)
+Version: v0.0008A (Initial Alpha Release)
 Date: 26-02-2022
 ########################################
 #NOTES
@@ -272,36 +272,6 @@ dsk.ps1 -Init
 #>
 
 }
-Function Setup-Firewall-RDPPort {
-Param (
-[Parameter(Mandatory=$true)][string]$IP
-)
-    write-log -LogData "Setup-Firewall-RDPPort Starting"
-    $Dtime = (get-date).DateTime
-    $RULE_DESCRIPTION = "DSK Generated RDP Firewall Rule - $Dtime"
-    $RDPPort = (Get-Item "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp").GetValue('PortNumber')
-    $RULE_NAME_PREFIX = "RDP Server (DSK Generated) - "
-    $Octet = '(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9]{2}|2[0-5][0-5]|2[0-4][0-9])'
-    [regex] $IPv4Regex = "^(?:$Octet\.){3}$Octet$"
-    $CheckIP = $IP -match $IPv4Regex
-    if($CheckIP) {
-        #check if the rules currently exist
-        $currentRules = (get-NetFirewallRule -Name "$RULE_NAME_PREFIX *" | Measure-Object).count
-        if($currentRules -gt 0) {
-
-            get-NetFirewallRule -Name "$RULE_NAME_PREFIX *" | remove-NetFirewallRule
-            write-log -LogData "Old Firewall Rules Found, removing..." -Silent
-            Start-sleep 1
-            }		
-        $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port TCP" -DisplayName "$RULE_NAME_PREFIX$Port Shadow TCP" -Description $RULE_DESCRIPTION -Direction Inbound -LocalPort $RDPPort -Protocol TCP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\svchost.exe -Group 'Remote Desktop'
-        $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port UDP" -DisplayName "$RULE_NAME_PREFIX$Port UDP" -Description $RULE_DESCRIPTION -Direction Inbound -LocalPort $RDPPort -Protocol UDP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\svchost.exe -Group 'Remote Desktop'
-        $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port Shadow TCP" -DisplayName "$RULE_NAME_PREFIX$Port Shadow TCP" -Description $RULE_DESCRIPTION -Direction Inbound -Protocol TCP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\RdpSa.exe -Group 'Remote Desktop'
-        }
-    write-log -LogData "Setup-Firewall-RDPPort Finished"
-}
-
-####################################################################################################
-
 Function Get-FirewallRule {
 <# 
 .DESCRIPTION 
@@ -363,6 +333,101 @@ Param (
     }
 return $rtn
 }
+Function Setup-Firewall-RDPPort {
+    Param (
+    [Parameter(Mandatory=$true)][string]$IP
+    )
+        write-log -LogData "Setup-Firewall-RDPPort Starting"
+        $Dtime = (get-date).DateTime
+        $RULE_DESCRIPTION = "DSK Generated RDP Firewall Rule - $Dtime"
+        $Port = (Get-Item "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp").GetValue('PortNumber')
+        $RULE_NAME_PREFIX = "RDP Server (DSK Generated) - "
+        $Octet = '(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9]{2}|2[0-5][0-5]|2[0-4][0-9])'
+        [regex] $IPv4Regex = "^(?:$Octet\.){3}$Octet$"
+        $CheckIP = $IP -match $IPv4Regex
+        if($CheckIP) {
+            Out-Report -Label "  Valid IP Addresss ==" -Data $IP
+            ########################################
+            $RuleName = "$RULE_NAME_PREFIX$Port TCP"
+            $RuleNameCheck = Get-FirewallRule -Name $RuleName
+            write-log -LogData "  Rule Name = $RuleName"
+            if($RuleNameCheck.Exists) {
+                write-log -LogData "  RDP TCP Firewall Rule with the same name found"
+                $prompt = Prompt-User -Question "  Did you wish to replace all current DSK RDP firewall rules?" -NoHelp "No, I will modify the firewall rules manually." -YesHelp "Yes, please modify this firewall rules for me,  NOTE: If the new information for the firewall rules is incorrect, you could lose connectivity to this machine." -NoAsDefault
+                if (-not ($prompt)) {
+                    $UPDATED_RULE_DESCRIPTION = ($RuleNameCheck.Description).Split(' --')[0] + " -- Last Updated on $Dtime"
+                    $shhh = Set-NetFirewallRule -NewDisplayName $RuleName `
+                                                -Description $UPDATED_RULE_DESCRIPTION `
+                                                -Program "%SystemRoot%\system32\svchost.exe" `
+                                                -Direction Inbound `
+                                                -LocalPort $Port `
+                                                -RemoteAddress $IP `
+                                                -Action Allow `
+                                                -Enabled true `
+                                                -Group 'Remote Desktop' `
+                                                -ErrorAction SilentlyContinue
+                    write-log -LogData "  RDP TCP Firewall Rule updated!"
+                    $RuleName = "$RULE_NAME_PREFIX$Port UDP"
+                    $RuleameCheck = Get-FirewallRule -Name $RuleName
+                    $UPDATED_RULE_DESCRIPTION = ($RuleNameCheck.Description).Split(' --')[0] + " -- Last Updated on $Dtime"
+                    $shhh = Set-NetFirewallRule -NewDisplayName $RuleName `
+                                                -Description $UPDATED_RULE_DESCRIPTION `
+                                                -Program "%SystemRoot%\system32\svchost.exe" `
+                                                -Direction Inbound `
+                                                -LocalPort $Port `
+                                                -RemoteAddress $IP `
+                                                -Action Allow `
+                                                -Enabled true `
+                                                -Group 'Remote Desktop' `
+                                                -ErrorAction SilentlyContinue
+                    write-log -LogData "  RDP UDP Firewall Rule updated!"
+                    $RuleName = "$RULE_NAME_PREFIX$Port Shadow TCP"
+                    $RuleameCheck = Get-FirewallRule -Name $RuleName
+                    $UPDATED_RULE_DESCRIPTION = ($RuleNameCheck.Description).Split(' --')[0] + " -- Last Updated on $Dtime"
+                    $shhh = Set-NetFirewallRule -NewDisplayName $RuleName `
+                                                -Description $UPDATED_RULE_DESCRIPTION `
+                                                -Program "%SystemRoot%\system32\svchost.exe" `
+                                                -Direction Inbound `
+                                                -LocalPort $Port `
+                                                -RemoteAddress $IP `
+                                                -Action Allow `
+                                                -Enabled true `
+                                                -Group 'Remote Desktop' `
+                                                -ErrorAction SilentlyContinue
+                    write-log -LogData "  RDP Shadow TCP Firewall Rule updated!"
+                    write-log -LogData " DONT FORGET TO DISABLE THE DEFAULT FIREWALL RULES FOR RDP"
+                    write-log -LogData "Setup-Firewall-RDPPort reports 'JOB DONE'"
+                }
+            } else {
+                $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port TCP" -DisplayName "$RULE_NAME_PREFIX$Port TCP" -Description $RULE_DESCRIPTION -Direction Inbound -LocalPort $Port -Protocol TCP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\svchost.exe -Group 'Remote Desktop'
+                write-log -LogData "  Creating RDP TCP Firewall Rule - $RULE_NAME_PREFIX$Port TCP"
+                $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port UDP" -DisplayName "$RULE_NAME_PREFIX$Port UDP" -Description $RULE_DESCRIPTION -Direction Inbound -LocalPort $Port -Protocol UDP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\svchost.exe -Group 'Remote Desktop'
+                write-log -LogData "  Creating RDP UDP Firewall Rule - $RULE_NAME_PREFIX$Port UDP"
+                $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port Shadow TCP" -DisplayName "$RULE_NAME_PREFIX$Port Shadow TCP" -Description $RULE_DESCRIPTION -Direction Inbound -Protocol TCP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\RdpSa.exe -Group 'Remote Desktop'    
+                write-log -LogData "  Creating RDP Shadow TCP Firewall Rule - $RULE_NAME_PREFIX$Port Shadow TCP"
+                write-log -LogData " DONT FORGET TO DISABLE THE DEFAULT FIREWALL RULES FOR RDP"
+                write-log -LogData "Setup-Firewall-RDPPort reports 'JOB DONE'"
+            }
+        } else {
+            Out-Report -Label "  Invalid IP Addresss ==" -Data $IP -CheckOK "RED"
+            write-log -LogData "  ERROR: Invalid IP Addresss == $IP" -Silent
+            write-log -LogData "Setup-Firewall-RDPPort aborted..."
+        }
+        # if($CheckIP) {
+        #     #check if the rules currently exist
+        #     $currentRules = (get-NetFirewallRule -Name "$RULE_NAME_PREFIX *" | Measure-Object).count
+        #     if($currentRules -gt 0) {
+    
+        #         get-NetFirewallRule -Name "$RULE_NAME_PREFIX *" | remove-NetFirewallRule
+        #         write-log -LogData "Old Firewall Rules Found, removing..." -Silent
+        #         Start-sleep 1
+        #         }		
+        #     $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port TCP" -DisplayName "$RULE_NAME_PREFIX$Port TCP" -Description $RULE_DESCRIPTION -Direction Inbound -LocalPort $RDPPort -Protocol TCP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\svchost.exe -Group 'Remote Desktop'
+        #     $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port UDP" -DisplayName "$RULE_NAME_PREFIX$Port UDP" -Description $RULE_DESCRIPTION -Direction Inbound -LocalPort $RDPPort -Protocol UDP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\svchost.exe -Group 'Remote Desktop'
+        #     $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port Shadow TCP" -DisplayName "$RULE_NAME_PREFIX$Port Shadow TCP" -Description $RULE_DESCRIPTION -Direction Inbound -Protocol TCP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\RdpSa.exe -Group 'Remote Desktop'
+        #     }
+        # write-log -LogData "Setup-Firewall-RDPPort Finished"
+    }
 Function Setup-Firewall-VNCPort {
 <# 
 .DESCRIPTION 
