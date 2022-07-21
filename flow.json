@@ -1,0 +1,1587 @@
+[
+    {
+        "id": "a764d58a1c34103b",
+        "type": "tab",
+        "label": "DSK",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ad0a25bf67ee3f66",
+        "type": "inject",
+        "z": "a764d58a1c34103b",
+        "name": "Initialize DSK",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 120,
+        "y": 440,
+        "wires": [
+            [
+                "81c88b3f6403302d",
+                "90ba03076a6d5ef1"
+            ]
+        ]
+    },
+    {
+        "id": "81c88b3f6403302d",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Functions",
+        "func": "Func = {\n    CheckNat: function (check, NATarr) {\n    var found = NATarr.indexOf(check)\n    if(found >= 0){rtn = false} {rtn = true}\n        return rtn;\n    },\n    GrantAccess: function (haystack, arr) {\n        return arr.some(function (v) {\n            return haystack.indexOf(v) >= 0;\n        })\n    },\n    pad: function (num, size) {\n        var s = num + \"\";\n        while (s.length < size) s = \"0\" + s;\n        return s;\n    },\n    DaysBetween: function (date1, date2) {\n        var one_day = 1000 * 60 * 60 * 24;\n        var date1_ms = date1.getTime();\n        var date2_ms = date2.getTime();\n        var difference_ms = date2_ms - date1_ms;\n        difference_ms = Math.round(difference_ms / 1000, 3);\n        var mseconds = difference_ms % 1000;\n        var seconds = Math.floor(difference_ms % 60);\n        difference_ms = difference_ms / 60;\n        var minutes = Math.floor(difference_ms % 60);\n        difference_ms = difference_ms / 60;\n        var hours = Math.floor(difference_ms % 24);\n        var days = Math.floor(difference_ms / 24);\n        return Func.pad(minutes, 2) + ':' + Func.pad(seconds, 2) + '.' + Func.pad(mseconds, 3);\n    },\n    GetPriority: function (priority) {\n        var PriorityTable = {\n            64: \"Low\",\n            16384: \"Below Normal\",\n            32: \"Normal\",\n            32768: \"Above Normal\",\n            128: \"High\",\n            256: \"Realtime\"\n        };\n        return (PriorityTable[priority])\n    },\n    Capitalize: function (str) {\n        const capitalized = str.charAt(0).toUpperCase() + str.slice(1);\n        return capitalized;\n    },\n    GetCoalition: function (coal) {\n        var CoalitionTable = {\n            0: \"Spectators\",\n            1: \"Red Forces\",\n            2: \"Blue Forces\"\n        };\n        return (CoalitionTable[coal])\n    },\n    ValidateIPaddress: function (IPAddr) {\n        return /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$|^\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*$/.test(IPAddr);\n    },\n    TimeOfDay: function (seconds) {\n        const DaySeconds = seconds % 86400\n        const format = val => `0${Math.floor(val)}`.slice(-2)\n        const hours = DaySeconds / 3600\n        const minutes = (DaySeconds % 3600) / 60\n        return [hours, minutes, DaySeconds % 60].map(format).join(':')\n    },\n    FormatTime: function (seconds) {\n        const format = val => `0${Math.floor(val)}`.slice(-2)\n        const hours = seconds / 3600\n        const minutes = (seconds % 3600) / 60\n        return [hours, minutes, seconds % 60].map(format).join(':')\n    },\n    TimeDelta: function (date1, date2, OutputType = \"WORDS\") {\n        // Example: var td = TimeDelta(<date1>,<date2>,\"NUMB\")\n        // Options for OutputType are \"WORDS\" and \"NUMB\" (Technically anything other than \"WORDS\" will yield the numbers output)\n        // WORDS will output something like 12 hours 53 minutes 02 seconds\n        // NUMBERS will output 12:53:02\n        // The output is smart, it will only output the values it needs, so you will not get 00:00:00:01 for 1 second.\n        var one_day = 1000 * 60 * 60 * 24;\n        var date1_ms = date1.getTime();\n        var date2_ms = date2.getTime();\n        var difference_ms = date2_ms - date1_ms;\n        difference_ms = Math.round(difference_ms / 1000, 3);\n        var mseconds = difference_ms % 1000;\n        var seconds = Math.floor(difference_ms % 60);\n        difference_ms = difference_ms / 60;\n        var minutes = Math.floor(difference_ms % 60);\n        difference_ms = difference_ms / 60;\n        var hours = Math.floor(difference_ms % 24);\n        var days = Math.floor(difference_ms / 24);\n        var d = \" day \"\n        var h = \" hour \"\n        var m = \" minute \"\n        var s = \" second \"\n        var ms = \" millisecond \"\n        if (days > 1) {\n            d = \" days \"\n        }\n        if (hours > 1) {\n            h = \" hours \"\n        }\n        if (minutes > 1) {\n            m = \" minutes \"\n        }\n        if (seconds > 1) {\n            s = \" seconds \"\n        }\n        if (seconds > 1) {\n            ms = \" milliseconds \"\n        }\n        var rtn = \"\"\n        ////////////////////////////////////////////////////////////////////////////////////\n        if (OutputType == \"WORDS\") {\n            rtn = Func.pad(seconds, 2) + s + Func.pad(mseconds, 3) + ms\n        } else {\n            rtn = [Func.pad(seconds, 2), Func.pad(mseconds, 3)].map(format).join('.')\n        }\n        ////////////////////////////////////////////////////////////////////////////////////\n        if (seconds > 0) {\n            if (OutputType == \"WORDS\") {\n                rtn = Func.pad(seconds, 2) + s + Func.pad(mseconds, 3) + ms\n            } else {\n                rtn = [Func.pad(seconds, 2), Func.pad(mseconds, 3)].map(format).join('.')\n            }\n        }\n        ////////////////////////////////////////////////////////////////////////////////////\n        if (minutes > 0) {\n            if (OutputType == \"WORDS\") {\n                rtn = Func.pad(minutes, 2) + m + Func.pad(seconds, 2) + s\n            } else {\n                rtn = [Func.pad(minutes, 2), Func.pad(seconds, 2)].map(format).join(':')\n            }\n        }\n        ////////////////////////////////////////////////////////////////////////////////////\n        if (hours > 0) {\n            if (OutputType == \"WORDS\") {\n                rtn = Func.pad(hours, 2) + h + Func.pad(minutes, 2) + m + Func.pad(seconds, 2) + s\n            } else {\n                rtn = [Func.pad(hours, 2), Func.pad(minutes, 2), Func.pad(seconds, 2)].map(format).join(':')\n            }\n        }\n        ////////////////////////////////////////////////////////////////////////////////////\n        if (days > 0) {\n            if (OutputType == \"WORDS\") {\n                rtn = days + d, +Func.pad(hours, 2) + h + Func.pad(minutes, 2) + m + Func.pad(seconds, 2) + s\n            } else {\n                rtn = [days, Func.pad(hours, 2), Func.pad(minutes, 2), Func.pad(seconds, 2)].map(format).join(':')\n            }\n        }\n        return rtn\n    },\n    genPassword: function (passwordLength) {\n        //var chars = \"0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\n        var chars = \"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\";\n        if (typeof passwordLength === 'undefined') { \n            passwordLength = 8;\n        }\n        passwordLength--;\n        var password = \"\";\n        for (var i = 0; i <= passwordLength; i++) {\n            var randomNumber = Math.floor(Math.random() * chars.length);\n            password += chars.substring(randomNumber, randomNumber + 1);\n        }\n        return password\n    }\n}\nflow.set('Func', Func);\nglobal.set('Func', Func);\nnode.status({\n    fill: \"green\",\n    shape: \"dot\",\n    text: \"Functions Loaded\"\n});",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "c8766dadbb091faa",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Initialize-DSK",
+        "func": "flow.set(\"DSK\", msg.PS);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 380,
+        "wires": [
+            [
+                "509021090b241c5e"
+            ]
+        ]
+    },
+    {
+        "id": "90ba03076a6d5ef1",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Init-PowerShell",
+        "func": "// This bit of code requests data from powershell to populate \n// the configuration items that were previously in Node-Red.\n\n//This resets the entire DSK variable structure from dsk.ps1 in preparation of it being reloaded, dont remove it!\nflow.set(\"DSK\", \"DSK NOT INITIALIZED\");\n\nvar payload = `-Init -DISCORDUSER SERVER_INITIALIZATION -DISCORDID SERVER_INITIALIZATION`\nmsg.payload = payload;\nvar requesttype = 'init'\nvar access = \"GRANTED\";\nmsg.data = {\n    \"createdTimestamp\": Date.now()\n    }\nvar tmstmp = msg.data.createdTimestamp;\nvar localdatetime = (new Date(tmstmp)).toLocaleString();\n\nmsg.DSK = {\n    \"FormattedTime\" : localdatetime,\n   \"RequestChannel\" : \"NODE-RED\",\n \"RequestChannelID\" : \"NODE-RED\",\n      \"requesttype\" : requesttype,\n           \"access\" : access,\n       \"authorized\" : true,\n            \"valid\" : true,\n          \"comment\" : \"\",\n     \"Notification\" : \"\",\n              \"TTC\" : \"\", //Time To Completion, This measures the time the system recieved the request through to the time the request was completed. This item is used in further down in the flow\n              \"raw\" : msg.payload\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 440,
+        "wires": [
+            [
+                "9b247e385bfe0f27"
+            ]
+        ]
+    },
+    {
+        "id": "9b247e385bfe0f27",
+        "type": "exec",
+        "z": "a764d58a1c34103b",
+        "command": "\"C:\\Program Files\\PowerShell\\7\\pwsh.exe\" -ExecutionPolicy Bypass -NoProfile -File \"C:\\DSK\\dsk.ps1\"",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": true,
+        "oldrc": false,
+        "name": "PowerShell",
+        "x": 490,
+        "y": 420,
+        "wires": [
+            [
+                "ac9e8407265fd82a"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "ac9e8407265fd82a",
+        "type": "json",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 595,
+        "y": 420,
+        "wires": [
+            [
+                "2e5075d5c14aa5eb"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "2e5075d5c14aa5eb",
+        "type": "change",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "PS",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 645,
+        "y": 420,
+        "wires": [
+            [
+                "26a325867983eed4"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "cb7776cfe67f4d95",
+        "type": "discordMessage",
+        "z": "a764d58a1c34103b",
+        "name": "DSK-In",
+        "token": "",
+        "x": 150,
+        "y": 760,
+        "wires": [
+            [
+                "6e50b2855460a435"
+            ]
+        ]
+    },
+    {
+        "id": "c2e20f32915aa669",
+        "type": "discordMessageManager",
+        "z": "a764d58a1c34103b",
+        "name": "DSK-Out",
+        "channel": "",
+        "token": "",
+        "x": 480,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "26a325867983eed4",
+        "type": "switch",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "property": "DSK.requesttype",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "shut",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "reload",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "init",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "vnc",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "rdp",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ftp",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 6,
+        "x": 695,
+        "y": 420,
+        "wires": [
+            [
+                "0d27e0db2216894e"
+            ],
+            [
+                "d55636cf9cd7c184"
+            ],
+            [
+                "c8766dadbb091faa"
+            ],
+            [
+                "80c77720145b702f"
+            ],
+            [
+                "80c77720145b702f"
+            ],
+            [
+                "80c77720145b702f"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "6e50b2855460a435",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "DeviceCheck",
+        "func": "var MsgSent = context.get('MsgSent') || 1;\nvar Func = flow.get('Func'); //Loads Flow Functions into memory\nvar DSK = flow.get('DSK'); //Loads DSK Configuration Data and sets it as a Variable DSK\n\n//Check if message first character \nif (msg.channel.type != \"dm\") {\n    if (msg.payload.substr(0,1) == DSK.CmdPrefix) {\n        var msglow = msg.payload.toLowerCase();\n        var splitmsg = msglow.split(\" \",3);\n        var command = splitmsg[0];\n        var server = splitmsg[1];\n        var requesttype = command.replace(DSK.CmdPrefix,'')\n        var Permissions = flow.get('DSK.Permissions.'+requesttype)\n        var tmstmp = msg.data.createdTimestamp;\n        var localdatetime = (new Date(tmstmp)).toLocaleString();\n        var access = \"NOTSET\";\n        msg.DSK = {\n                  \"request\" : command,\n            \"FormattedTime\" : localdatetime,\n           \"RequestChannel\" : msg.channel.name,\n         \"RequestChannelID\" : msg.channel.id,\n              \"requesttype\" : requesttype,\n                   \"access\" : access,\n               \"authorized\" : false,\n                    \"valid\" : false,\n                    'silent' : false,\n                  \"comment\" : \"\",\n             \"Notification\" : \"\",\n                      \"TTC\" : \"\", //Time To Completion, This measures the time the system recieved the request through to the time the request was completed. This item is used in further down in the flow\n                      \"raw\" : msg.payload\n        }\n        if (requesttype == \"test\") { //All Servers should respond to a test command\n            msg.DSK.valid = true;\n            msg.DSK.authorized = true;\n            msg.DSK.access = \"GRANTED\"\n            msg.DSK.Notification = DSK.DeviceID+\" successfully recieved a \"+(Func.Capitalize(msg.DSK.requesttype))+\" message request from \"+msg.author.username+ \" in the \"+msg.DSK.RequestChannel+\" channel on the \" +msg.DSK.FormattedTime;\n            return msg;\n            }\n        if (DSK.EnableHelp) {\n        if (requesttype == \"help\") {\n                msg.DSK.authorized = true;\n                msg.DSK.access = \"GRANTED\"\n                msg.DSK.Notification = \"\"\n                return msg;        \n                }\n            } \n        if(server == DSK.DeviceID.toLowerCase()) {return msg} //use this line if you have multiple servers operating from a single channel\n        \n    }\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 760,
+        "wires": [
+            [
+                "b5a73469af67a299"
+            ]
+        ]
+    },
+    {
+        "id": "b5a73469af67a299",
+        "type": "switch",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "property": "DSK.requesttype",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "shut",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "reload",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "vnc",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "rdp",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ftp",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "reboot",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "test",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "help",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "version",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "info",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 10,
+        "x": 395,
+        "y": 760,
+        "wires": [
+            [
+                "211696cf0f426e49"
+            ],
+            [
+                "211696cf0f426e49"
+            ],
+            [
+                "211696cf0f426e49"
+            ],
+            [
+                "211696cf0f426e49"
+            ],
+            [
+                "211696cf0f426e49"
+            ],
+            [
+                "211696cf0f426e49"
+            ],
+            [
+                "211696cf0f426e49"
+            ],
+            [
+                "211696cf0f426e49"
+            ],
+            [
+                "211696cf0f426e49"
+            ],
+            [
+                "211696cf0f426e49"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "211696cf0f426e49",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Authentication",
+        "func": "/*\nChecks the Discord Message User groups against the specific command being run and either passes the message onto Pre-Processing or sends an \naccess denied message and logs the access denied request. Note, Access Granted is assumed from this point so the Pre-Processing section needs \nto take care of the task notification after the command in questions syntax is checked.\n*/\n\n\n////////////////////////////////////////////////////////////////////////////////////////////////////\n////Initialize Variables\nvar MsgSent = context.get('MsgSent') || 1;\n\n//Get Flow Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\nvar CommandPermissions = flow.get('DSK.Permissions.'+msg.DSK.requesttype)\n\nif (Func.GrantAccess(CommandPermissions,msg.member.roles)) {\n    msg.DSK.authorized = true;\n    msg.DSK.access = \"GRANTED\"\n    }\nelse {\n    msg.DSK.authorized = false;\n    msg.DSK.Notification = `!!ACCESS DENIED!! ` +msg.author.username+ ` you do not have access to the `+(Func.Capitalize(msg.DSK.requesttype))+` command on server ` +DSK.DeviceID+ `, message ignored on the `+msg.DSK.FormattedTime\n    msg.DSK.access = \"DENIED\"\n    node.status({fill:\"red\",shape:\"dot\",text: \"ACCESS DENIED - \"+MsgSent});\n    context.set('MsgSent', (MsgSent + 1));\n    }\n\nif(msg.DSK.authorized) {return [msg,null]} else {return [null,msg]}",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 760,
+        "wires": [
+            [
+                "1926abee59961731"
+            ],
+            [
+                "bdd7b5043bcfec73"
+            ]
+        ],
+        "outputLabels": [
+            "GRANTED",
+            "DENIED"
+        ],
+        "icon": "font-awesome/fa-shield"
+    },
+    {
+        "id": "1926abee59961731",
+        "type": "switch",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "property": "DSK.requesttype",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "shut",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "reload",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "vnc",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "rdp",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ftp",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "reboot",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "test",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "help",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "version",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "info",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 10,
+        "x": 645,
+        "y": 720,
+        "wires": [
+            [
+                "d36a197e32ed1b05"
+            ],
+            [
+                "6b91a9c852e8f9eb"
+            ],
+            [
+                "47dbc02a747ebde9"
+            ],
+            [
+                "47dbc02a747ebde9"
+            ],
+            [
+                "47dbc02a747ebde9"
+            ],
+            [
+                "6370d9b276b93ccc"
+            ],
+            [
+                "de11c0eecb835d08"
+            ],
+            [
+                "d8f4c6feb9c51bd0"
+            ],
+            [
+                "681e21481880ba3c"
+            ],
+            [
+                "aef0fcc433847d35"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "47dbc02a747ebde9",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "FTP, RDP, VNC Pre-Processing",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n////////////////////////////////////////////////////////////////////////////////////////////////////\nmsg.DSK.Notification = \"\" //Stops the Notification system from sending out a message.\nvar msglow = msg.DSK.raw.toLowerCase();\nvar splitmsg = msglow.split(\" \",3);\n\nvar IPAddr = splitmsg[2];\nif (typeof IPAddr === 'undefined') {IPAddr = \"\"}\nelse {\n    msg.DSK.access = {\n                'IPAddr' : IPAddr,\n             'FirstLoop' : true,\n               'Payload' : \"\"\n    }\n}\nif(!(Func.ValidateIPaddress(IPAddr))) {\n    msg.DSK.valid = false;\n    msg.DSK.Notification = DSK.DeviceID+ ` has detected the IP Address provided is not valid (`+IPAddr+`). Please enter a valid IPv4 or IPv6 IP address to use the `+msg.DSK.requesttype.toUpperCase()+`.`\n    return [null,msg]\n} else {\n    msg.DSK.valid = true;\n    //msg.DSK.Notification = DSK.DeviceID+ ` has verified your `+(Func.Capitalize(msg.DSK.requesttype))+` command and has begun processing it. Please wait.....`\n\n    if ((!(DSK.Access.ftp)) && (msg.DSK.requesttype == 'ftp')) {\n        msg.DSK.valid = false;\n        msg.DSK.Notification = DSK.DeviceID+ ` has recieved your `+msg.DSK.requesttype.toUpperCase()+` request, unfortunately `+msg.DSK.requesttype.toUpperCase()+` isn't enabled on this Device so no further action will be conducted.`\n    } else {\n        //msg.payload = `-access -IP `+IPAddr+` -USER `+msg.author.username+` -ID `+msg.author.id+ ` -FTP`;\n        }\n\n    if ((!(DSK.Access.rdp)) && (msg.DSK.requesttype == 'rdp')) {\n        msg.DSK.valid = false;\n        msg.DSK.Notification = DSK.DeviceID+ ` has recieved your `+msg.DSK.requesttype.toUpperCase()+` request, unfortunately `+msg.DSK.requesttype.toUpperCase()+` isn't enabled on this Device so no further action will be conducted.`\n    } else {\n        //msg.payload = `-access -IP `+IPAddr+` -USER `+msg.author.username+` -ID `+msg.author.id+ ` -RDP`;    \n        }\n\n    if ((!(DSK.Access.vnc)) && (msg.DSK.requesttype == 'vnc')) {\n        msg.DSK.valid = false;\n        msg.DSK.Notification = DSK.DeviceID+ ` has recieved your `+msg.DSK.requesttype.toUpperCase()+` request, unfortunately `+msg.DSK.requesttype.toUpperCase()+` isn't enabled on this Device so no further action will be conducted.`\n    } else {\n        //msg.payload = `-access -IP `+IPAddr+` -USER `+msg.author.username+` -ID `+msg.author.id+ ` -VNC`;            \n        }\n\n}\nif(msg.channel.id != DSK.Channel.ReqChannel) {\n    msg.DSK.valid = false;\n    msg.DSK.Notification = DSK.DeviceID+` acknowledges your `+msg.DSK.requesttype.toUpperCase()+` command, due to the sensitive nature of the information the reply contains, DSK has aborted this request, please use the correct channel.`\n}\n////////////////////////////////////////////////////////////////////////////////////////////////////\nvar MsgSent = context.get('MsgSent') || 1;\nnode.status({fill:\"green\",shape:\"ring\",text: \"Access Requests: \"+MsgSent});\ncontext.set('MsgSent', (MsgSent + 1));\n////////////////////////////////////////////////////////////////////////////////////////////////////\nif(msg.DSK.valid) {\n    return [msg,msg]\n} else {\n    return [null,msg]\n} ",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 660,
+        "wires": [
+            [
+                "625a27886c361599"
+            ],
+            [
+                "42b9060812196284"
+            ]
+        ],
+        "icon": "node-red/inject.svg"
+    },
+    {
+        "id": "de11c0eecb835d08",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Test Processing",
+        "func": "var MsgSent = context.get('MsgSent') || 1;\nvar Func = flow.get('Func'); //Needed for Notification\nvar DSK = flow.get('DSK'); //Needed for Notification\nmsg.DSK.comments = \"Request Actioned\"\nmsg.DSK.Notification = DSK.DeviceID+\" successfully recieved a \"+(Func.Capitalize(msg.DSK.requesttype))+\" message request from \"+msg.author.username+ \" in the \"+msg.DSK.RequestChannel+\" channel on the \" +msg.DSK.FormattedTime;\nmsg.DSK.comment = \"Cached Response\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 780,
+        "wires": [
+            [
+                "42b9060812196284"
+            ]
+        ],
+        "icon": "node-red/inject.svg"
+    },
+    {
+        "id": "d8f4c6feb9c51bd0",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Help Processing",
+        "func": "var MsgSent = context.get('MsgSent') || 1;\nvar DSK = flow.get('DSK');\nvar Func = flow.get('Func');\nmsg.DSK.Notification = \"\" //Stops the Notification system from sending out a message.\nmsg.DSK.comment = \"Cached Response\"\nvar msglow = msg.DSK.raw.toLowerCase();\nvar splitmsg = msglow.split(\" \",3);\nvar HelpCommand = splitmsg[1];\nif (HelpCommand == DSK.DeviceID.toLowerCase()) {HelpCommand = splitmsg[2]}\nvar ftp  = false\nvar vnc  = false\nvar rdp  = false\nvar test = false\nvar help = false\nvar reload = false\nvar reboot = false\nvar info = false\nvar version = false\nvar shut = false\n\nif (HelpCommand == \"reload\") {reload = true}\nif (HelpCommand == \"reboot\") {reboot = true}\nif (HelpCommand == \"ftp\") {ftp = true}\nif (HelpCommand == \"vnc\") {vnc = true}\nif (HelpCommand == \"rdp\") {rdp = true}\nif (HelpCommand == \"test\") {test = true}\nif (HelpCommand == \"help\") {help = true}\nif (HelpCommand == \"info\") {info = true}\nif (HelpCommand == \"version\") {version = true}\nif (HelpCommand == \"shut\") {shut = true}\n\nmsg.DSK.help = {\n    \"HelpCommand\" : HelpCommand,\n         \"reload\" : reload,\n         \"reboot\" : reboot,\n           \"test\" : test,\n            \"ftp\" : ftp,\n            \"vnc\" : vnc,\n            \"rdp\" : rdp,\n           \"help\" : help,\n           \"info\" : info,\n        \"version\" : version,\n           \"shut\" : shut\n    }\n    \nnode.status({fill:\"green\",shape:\"ring\",text: \"N00bs empowered: \"+MsgSent});\ncontext.set('MsgSent', (MsgSent + 1));\n\nif (HelpCommand == \"reload\") {return msg}\nif (HelpCommand == \"reboot\") {return msg}\nif (HelpCommand == \"ftp\") {return msg}\nif (HelpCommand == \"vnc\") {return msg}\nif (HelpCommand == \"rdp\") {return msg}\nif (HelpCommand == \"test\") {return msg}\nif (HelpCommand == \"help\") {return msg}\nif (HelpCommand == \"info\") {return msg}\nif (HelpCommand == \"version\") {return msg}\nif (HelpCommand == \"shut\") {return msg}\n\nif (typeof msg.DSK.help.HelpCommand === 'undefined') {    \n    msg.DSK.help.HelpCommand = \"help\"\n    msg.DSK.help.help = true\n    return msg\n}\nmsg.DSK.help.HelpCommand = \"help\"\nmsg.DSK.help.help = true\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 840,
+        "wires": [
+            [
+                "12821c7d88668fa5"
+            ]
+        ],
+        "icon": "node-red/inject.svg"
+    },
+    {
+        "id": "12821c7d88668fa5",
+        "type": "template",
+        "z": "a764d58a1c34103b",
+        "name": "Help",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Your help request was actioned by {{{flow.DSK.DeviceID}}}...\n```\n{{#DSK.help.help}}\nWelcome to the DSK help system. This version of DSK has the following command available:\n\n       help        : Will display this dialogue\n       test        : Will respond if your configuration and connectivity are working\n       ftp         : Requests File Transport Protocol (FTP) Access\n       rdp         : Requests Remote Desktop Protocol (RDP) Access\n       vnc         : Requests Virtual Network Computing (VNC) Access\n       info        : Shows DSK configuration information\n       reload      : Initiates a reload of all DSK configuration files\n       reboot      : Reboots the Device DSK is running on\n       shut        : Closes all temporary firewall rules currently active on the DSK Device\n       version     : Shows software versions on the DSK Device\n\nData will be displayed in a similar way as below.\n#############################################\n           Command : Help\n\n       Description : Shows Help Dialogue, make sure you exclude the '{{{flow.DSK.CmdPrefix}}}' when specifying the command you need help with.\n\nExecution Duration : Instant, Cached Response\n\n            Useage : {{{flow.DSK.CmdPrefix}}}help\n\t\t\tUseage : {{{flow.DSK.CmdPrefix}}}help command\n\n        Example 01 : {{{flow.DSK.CmdPrefix}}}help\n        Example 02 : {{{flow.DSK.CmdPrefix}}}help test\n        Example 03 : {{{flow.DSK.CmdPrefix}}}help ftp\n        Example 04 : {{{flow.DSK.CmdPrefix}}}help rdp\n        Example 05 : {{{flow.DSK.CmdPrefix}}}help vnc\n        Example 06 : {{{flow.DSK.CmdPrefix}}}help info\n        Example 07 : {{{flow.DSK.CmdPrefix}}}help reload\n        Example 08 : {{{flow.DSK.CmdPrefix}}}help reboot\n        Example 09 : {{{flow.DSK.CmdPrefix}}}help shut\n        Example 10 : {{{flow.DSK.CmdPrefix}}}help version\n#############################################\n{{/DSK.help.help}}{{#DSK.help.test}}\n#############################################\n           Command : Test\n   \n       Description : Test is used to validate communications between DSK instances and Discord. \n\nExecution Duration : Instant, Cached Response\n \n            Useage : {{{flow.DSK.CmdPrefix}}}test\n            \n           Example : {{{flow.DSK.CmdPrefix}}}test\n#############################################\n{{/DSK.help.test}}{{#DSK.help.reload}}\n#############################################\n           Command : reload\n   \n       Description : Reloads the DSK configuration files and loads the new configuration into Node-Red for use by the DSK flow. Great command for tweaking your server configuration without the need to re-deploy the Node-Red Flow.\n\nExecution Duration : Approximately 5 seconds depending on your server specifications.\n \n            Useage : {{{flow.DSK.CmdPrefix}}}reload DeviceName\n        \n           Example : {{{flow.DSK.CmdPrefix}}}reload DSK-dev\n#############################################\n{{/DSK.help.reload}}{{#DSK.help.reboot}}\n#############################################\n           Command : reboot\n   \n       Description : Reboot will restart the servers operating system. The server will respond during the DSK AutoStart (enabled by default) sequence on successful reboot event.\n\nExecution Duration : It's Windows, could be 20 seconds, could be 30 minutes. Best to go get a cuppa tea and a few biccies.\n \n            Useage : {{{flow.DSK.CmdPrefix}}}reboot DeviceName\n        \n           Example : {{{flow.DSK.CmdPrefix}}}reboot DSK-dev\n#############################################\n{{/DSK.help.reboot}}{{#DSK.help.rdp}}\n#############################################\n           Command : rdp\n   \n       Description : Starts the process of authenticating and granting access to the DSK device via Remote Desktop Protocol. (RDP) \n\nExecution Duration : Approximately 5 seconds depending on your server specifications.\n \n            Useage : {{{flow.DSK.CmdPrefix}}}rdp DeviceName IPAddress\n        \n           Example : {{{flow.DSK.CmdPrefix}}}rdp DSK-dev\n#############################################\n{{/DSK.help.rdp}}{{#DSK.help.vnc}}\n#############################################\n           Command : vnc\n   \n       Description : Starts the process of authenticating and granting access to the DSK device via Virtual Network Computing. (VNC) \n\nExecution Duration : Approximately 5 seconds depending on your server specifications.\n \n            Useage : {{{flow.DSK.CmdPrefix}}}vnc DeviceName IPAddress\n        \n           Example : {{{flow.DSK.CmdPrefix}}}vnc DSK-dev 8.8.8.8\n#############################################\n{{/DSK.help.vnc}}{{#DSK.help.ftp}}\n#############################################\n           Command : ftp\n   \n       Description : Starts the process of authenticating and granting access to the DSK device file system via File Transfer Protocol. (FTP) \n\nExecution Duration : Approximately 5 seconds depending on your server specifications.\n \n            Useage : {{{flow.DSK.CmdPrefix}}}ftp DeviceName IPAddress\n        \n           Example : {{{flow.DSK.CmdPrefix}}}ftp DSK-dev 8.8.8.8\n#############################################\n{{/DSK.help.ftp}}{{#DSK.help.shut}}\n#############################################\n           Command : shut\n   \n       Description : Clears all temporary firewall rules currently active on the DSK device. This command is automatically executed by the device prior to a reboot command.\n\nExecution Duration : Approximately 5 seconds depending on your server specifications.\n \n            Useage : {{{flow.DSK.CmdPrefix}}}shut DeviceName\n        \n           Example : {{{flow.DSK.CmdPrefix}}}shut DSK-dev\n#############################################\n{{/DSK.help.shut}}{{#DSK.help.info}}\n#############################################\n           Command : info\n   \n       Description : Responds with DSK configuration data of the specific DSK Device.\n\nExecution Duration : Approximately 5 seconds depending on your server specifications.\n \n            Useage : {{{flow.DSK.CmdPrefix}}}info DeviceName\n        \n           Example : {{{flow.DSK.CmdPrefix}}}info DSK-dev\n#############################################\n{{/DSK.help.info}}{{#DSK.help.version}}\n#############################################\n           Command : version\n   \n       Description : Returns all the software version information for the specific DSK Device\n\nExecution Duration : Approximately 5 seconds depending on your server specifications.\n \n            Useage : {{{flow.DSK.CmdPrefix}}}version DeviceName\n        \n           Example : {{{flow.DSK.CmdPrefix}}}version DSK-dev\n#############################################\n{{/DSK.help.version}}\n\n```",
+        "output": "str",
+        "x": 955,
+        "y": 840,
+        "wires": [
+            [
+                "61f9cb69969e1b1a"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "6eac31cd91349665",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Log Prep",
+        "func": "var DSK = flow.get('DSK');\n//do check if channel.id exisits if not, create it and set to log\nmsg.channel.id = DSK.Channel.LogChannel;\nmsg.user = null\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 175,
+        "y": 640,
+        "wires": [
+            [
+                "7f257f9e82824fe0"
+            ]
+        ],
+        "icon": "node-red/file.svg",
+        "l": false
+    },
+    {
+        "id": "999cf5493ee7c2d5",
+        "type": "link in",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "links": [
+            "42b9060812196284",
+            "bdd7b5043bcfec73",
+            "30b972d9963e745c",
+            "4b2b6cf5f621f46e"
+        ],
+        "x": 125,
+        "y": 600,
+        "wires": [
+            [
+                "6eac31cd91349665",
+                "fb357dfbf83857ec"
+            ]
+        ]
+    },
+    {
+        "id": "61f9cb69969e1b1a",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "165fb7e4fd5b6ec2"
+        ],
+        "x": 1035,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "7f257f9e82824fe0",
+        "type": "template",
+        "z": "a764d58a1c34103b",
+        "name": "Logging",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "```\n         TimeStamp: {{{DSK.FormattedTime}}}\n         Requestor: {{{author.username}}}\n      Request Type: {{{DSK.request}}}\n         Responder: {{{flow.DSK.DeviceID}}}\n           Raw Msg: {{{DSK.raw}}}\n    RequestChannel: {{{DSK.RequestChannel}}}\nRequest Channel ID: {{{DSK.RequestChannelID}}}\n        Request ID: {{{_msgid}}}\n          Comments: {{{DSK.comment}}}{{#DSK.TTC}}. Time To Complete = {{{DSK.TTC}}}{{/DSK.TTC}}\n```",
+        "output": "str",
+        "x": 300,
+        "y": 640,
+        "wires": [
+            [
+                "c2e20f32915aa669"
+            ]
+        ]
+    },
+    {
+        "id": "fb357dfbf83857ec",
+        "type": "template",
+        "z": "a764d58a1c34103b",
+        "name": "Notifications",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{#DSK.Notification}}```{{{DSK.Notification}}}```\n{{#DSK.TCC}}Request completed in {{{DSK.TCC}}}{{/DSK.TCC}}{{/DSK.Notification}}",
+        "output": "str",
+        "x": 230,
+        "y": 560,
+        "wires": [
+            [
+                "ebb618f2952ee920"
+            ]
+        ]
+    },
+    {
+        "id": "426ff5146c522eef",
+        "type": "link in",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "links": [
+            "8276fb90d4611ca8"
+        ],
+        "x": 125,
+        "y": 640,
+        "wires": [
+            [
+                "6eac31cd91349665"
+            ]
+        ]
+    },
+    {
+        "id": "b6eee424846be4d6",
+        "type": "link in",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "links": [
+            "5a5e020631e7dac1",
+            "3760ae70a29333fa"
+        ],
+        "x": 125,
+        "y": 560,
+        "wires": [
+            [
+                "fb357dfbf83857ec"
+            ]
+        ]
+    },
+    {
+        "id": "f9ab4ebe9199969b",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Discord Secret Knock DeviceID",
+        "func": "//DO NOT MODIFY THIS DATA!! ALL DATA IS PULLED FROM THE dsk.ps1 FILE, MODIFY THE DATA THERE!!!!\nnode.status({fill:\"green\",shape:\"dot\",text:\"DeviceID - \" +flow.get('DSK.DeviceID')});",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "17a1d2dfc8428cbb",
+        "type": "link in",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "links": [
+            "509021090b241c5e"
+        ],
+        "x": 125,
+        "y": 80,
+        "wires": [
+            [
+                "f9ab4ebe9199969b",
+                "50b6058d256880cb",
+                "724c94dbde48d197",
+                "6e83f69b66387b55"
+            ]
+        ]
+    },
+    {
+        "id": "509021090b241c5e",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "17a1d2dfc8428cbb"
+        ],
+        "x": 1115,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "50b6058d256880cb",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Discord Secret Knock Version",
+        "func": "//DO NOT MODIFY THIS DATA!! ALL DATA IS PULLED FROM THE DSK.ps1 FILE, MODIFY THE DATA THERE!!!!\nflow.set('DSK.Version.DSK_FLOW', \"v1.0f\")\nvar DSK = flow.get('DSK');\nvar StatusString = \"PowerShell - \"+DSK.Version.DSK_PS+\"  ----  Flow - \"+DSK.Version.DSK_FLOW\nnode.status({fill:\"green\",shape:\"dot\",text:StatusString});\n\n",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "724c94dbde48d197",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Discord Secret Knock Help Enabled",
+        "func": "var HelpEnabled = flow.get('DSK.EnableHelp');\nif (HelpEnabled) {\n    node.status({fill:\"green\",shape:\"dot\",text:\"Help is enabled\"});\n    }\nelse {\n    node.status({fill:\"green\",shape:\"ring\",text:\"Help is disabled\"});\n    }",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "1f2381f19ddea0d4",
+        "type": "switch",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 345,
+        "y": 600,
+        "wires": [
+            [
+                "c2e20f32915aa669"
+            ]
+        ],
+        "icon": "font-awesome/fa-caret-right",
+        "l": false
+    },
+    {
+        "id": "ebb618f2952ee920",
+        "type": "switch",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 345,
+        "y": 560,
+        "wires": [
+            [
+                "c2e20f32915aa669"
+            ]
+        ],
+        "icon": "font-awesome/fa-caret-right",
+        "l": false
+    },
+    {
+        "id": "165fb7e4fd5b6ec2",
+        "type": "link in",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "links": [
+            "61f9cb69969e1b1a",
+            "d44f338b7cb985ec"
+        ],
+        "x": 285,
+        "y": 600,
+        "wires": [
+            [
+                "1f2381f19ddea0d4"
+            ]
+        ]
+    },
+    {
+        "id": "42b9060812196284",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "999cf5493ee7c2d5"
+        ],
+        "x": 1035,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "bdd7b5043bcfec73",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "999cf5493ee7c2d5"
+        ],
+        "x": 645,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "d734feb181ec7cc0",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "ce4e609d4e9bf9a0"
+        ],
+        "x": 1035,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "ce4e609d4e9bf9a0",
+        "type": "link in",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "links": [
+            "d734feb181ec7cc0",
+            "558196be95fad532",
+            "971fecf616fc2e34",
+            "925d9a39e4519ef1"
+        ],
+        "x": 385,
+        "y": 400,
+        "wires": [
+            [
+                "9b247e385bfe0f27"
+            ]
+        ]
+    },
+    {
+        "id": "80c77720145b702f",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Access Post-Processing",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n\n////////////////////////////////////////////////////////////////////////////////////////////////////\nvar ttc = Func.DaysBetween((new Date(msg.data.createdTimestamp)), new Date());\nmsg.DSK.TTC = ttc\nmsg.DSK.comment = \"Request Actioned\"\nmsg.delay = (DSK.TimeOut * 1000)\nif (msg.DSK.access.FirstLoop) {\n    //First Loop\n    msg.DSK.access.FirstLoop = false\n    msg.DSK.access.Instructions = true\n    //msg.reset = true //Resets the \n    msg.DSK.comment = msg.DSK.requesttype.toUpperCase()+\" Firewall rule created for \"+msg.author.username+\" (DiscordID: \"+msg.author.id+\")\"\n    msg.DSK.access.Payload = msg.DSK.access.Payload+\" -Shut\"\n    msg.payload = msg.DSK.access.Payload\n    return [msg,msg]\n} else {\n    msg.DSK.access.Instructions = false\n    //Second and additional Loops\n    msg.payload = msg.DSK.access.Payload //Attempt to shut connection (will fail if a connection is detected)\n    if(!(msg.PS.Connected) && !(msg.PS.ExitLoop)) {\n        msg.DSK.comment = \"No connection detected, shutting port for \"+msg.author.username+\" (DiscordID: \"+msg.author.id+\")\"\n        msg.delay = 0\n        //msg.payload = msg.DSK.access.Payload\n        return [msg,msg]\n    }\n    if(msg.PS.ExitLoop) {\n        //Final Loop\n        msg.DSK.comment = msg.DSK.requesttype.toUpperCase()+\" Firewall rule removed for \"+msg.author.username+\" (DiscordID: \"+msg.author.id+\")\"\n        msg.delay = 0\n        //msg.DSK.access.Payload = msg.payload //Shows the next message to be sent to the script\n        return [msg,null]\n    } else {\n        return [null,msg]\n    }\n}\n\n\n//    msg.payload = msg.payload+\" -Shut\"\n\n/*\n\n\n\nif(msg.DSK.requesttype == 'secure') {\n//Second and Further Time through\n    msg.DSK.access.FirstLoop = false\n    if(msg.PS.ExitLoop) {\n        msg.DSK.payload = \"ExitLoop\"\n    } else {\n        if (DSK.ServerInfo.VNCEnabled) {\n            msg.DSK.payload = `-secure -IP `+msg.DSK.access.IPAddr+` -USER `+msg.member.displayName+` -ID `+msg.member.userID+' -VNC'; //Shows the next message to be sent to the script\n        } else {\n            msg.DSK.payload = `-secure -IP `+msg.DSK.access.IPAddr+` -USER `+msg.member.displayName+` -ID `+msg.member.userID; //Shows the next message to be sent to the script\n        }    \n    }\n}\n\nif(msg.DSK.requesttype == 'access') {\n//First Time through\n    msg.delay = (DSK.TimeOut * 1000)\n    msg.DSK.requesttype = 'secure'\n    msg.DSK.commentLog = 'Firewall rule created for '+msg.DSK.User+`(DiscordID: `+msg.DSK.DiscordID+`)`\n    if (DSK.ServerInfo.VNCEnabled) {\n        msg.DSK.payload = `-secure -IP `+msg.DSK.access.IPAddr+` -USER `+msg.member.displayName+` -ID `+msg.member.userID+' -VNC'; //Shows the next message to be sent to the script\n    } else {\n        msg.DSK.payload = `-secure -IP `+msg.DSK.access.IPAddr+` -USER `+msg.member.displayName+` -ID `+msg.member.userID; //Shows the next message to be sent to the script\n    }\n}    \n\n*/\n//msg.payload = msg.DSK.payload;\n//if(msg.PS.ExitLoop) {return [msg,null]} else {return [msg,msg]}\n\n\n\n//msg.DSK.Notification = DSK.ServerInfo.ServerID+ ` has `+(Func.Capitalize(msg.DSK.requesttype))+extraP+`ed the the server. The task took `+msg.DSK.TTC+` to complete.`\n////////////////////////////////////////////////////////////////////////////////////////////////////\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 440,
+        "wires": [
+            [
+                "7b24a93db76af73b"
+            ],
+            [
+                "10d9a95dd6a3df86"
+            ]
+        ]
+    },
+    {
+        "id": "42bb1b48eae48cab",
+        "type": "template",
+        "z": "a764d58a1c34103b",
+        "name": "Status Formatting",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{#DSK.access.Instructions}}```\n{{{author.username}}}, your request to access {{flow.DSK.DeviceID}} has been granted. Connection Details are:\n            \n      Console Connection Type : {{{PS.RuleType}}}\n    Console Connection String : {{{flow.DSK.IPAddr}}}:{{{PS.Port}}}\n       Firewall Authorized IP : {{{DSK.access.IPAddr}}}\n\nYou have {{{flow.DSK.TimeOut}}} seconds to connect to the server before the firewall is closed.\n```\nRequest completed in {{DSK.TTC}}\n{{/DSK.access.Instructions}}\n\n{{#PS.Connected}}```\nConnection detected to {{flow.DSK.DeviceID}} from {{{DSK.access.IPAddr}}} for {{{author.username}}}. Time since request is {{DSK.TTC}}\n```{{/PS.Connected}}\n{{#PS.ExitLoop}}```\nConnection not detected, firewall rule removed for server {{flow.DSK.DeviceID}}. Total time elapsed since initial request is {{DSK.TTC}}\n```{{/PS.ExitLoop}}\n",
+        "output": "str",
+        "x": 1065,
+        "y": 400,
+        "wires": [
+            [
+                "d44f338b7cb985ec"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "10d9a95dd6a3df86",
+        "type": "delay",
+        "z": "a764d58a1c34103b",
+        "name": "delay 'n'",
+        "pauseType": "delayv",
+        "timeout": "60",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1015,
+        "y": 460,
+        "wires": [
+            [
+                "971fecf616fc2e34"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "7b24a93db76af73b",
+        "type": "rbe",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "PS.Status",
+        "topi": "topic",
+        "x": 1015,
+        "y": 420,
+        "wires": [
+            [
+                "42bb1b48eae48cab",
+                "8276fb90d4611ca8"
+            ]
+        ],
+        "icon": "node-red/alert.svg",
+        "l": false
+    },
+    {
+        "id": "d44f338b7cb985ec",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "165fb7e4fd5b6ec2"
+        ],
+        "x": 1115,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "8276fb90d4611ca8",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "426ff5146c522eef"
+        ],
+        "x": 1115,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "6b91a9c852e8f9eb",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Reload",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n////////////////////////////////////////////////////////////////////////////////////////////////////\nmsg.DSK.valid = true;\nmsg.DSK.Notification = DSK.DeviceID+ ` has received your request `+msg.author.username+ ` and has begun processing your `+(Func.Capitalize(msg.DSK.requesttype))+` request, please wait....`\nmsg.payload = '-'+msg.DSK.requesttype+' -DISCORDUSER '+msg.author.username+' -DISCORDID '+msg.author.id\n////////////////////////////////////////////////////////////////////////////////////////////////////\nvar MsgSent = context.get('MsgSent') || 1;\nnode.status({fill:\"green\",shape:\"ring\",text: \"Settings tweaked: \"+MsgSent});\ncontext.set('MsgSent', (MsgSent + 1));\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 600,
+        "wires": [
+            [
+                "d734feb181ec7cc0",
+                "42b9060812196284"
+            ]
+        ],
+        "icon": "node-red/inject.svg"
+    },
+    {
+        "id": "d55636cf9cd7c184",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Reload Config",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nflow.set(\"DSK\", msg.PS);\nvar DSK = flow.get('DSK');\n////////////////////////////////////////////////////////////////////////////////////////////////////\nvar ttc = Func.DaysBetween((new Date(msg.data.createdTimestamp)), new Date());\nmsg.DSK.TTC = ttc\nmsg.DSK.comment = \"Request Actioned\"\nmsg.DSK.Notification = DSK.DeviceID+ ` has updated its settings from the DSK configuration files. The task took `+msg.DSK.TTC+` to complete.`\n////////////////////////////////////////////////////////////////////////////////////////////////////\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 320,
+        "wires": [
+            [
+                "509021090b241c5e",
+                "30b972d9963e745c"
+            ]
+        ]
+    },
+    {
+        "id": "30b972d9963e745c",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "999cf5493ee7c2d5"
+        ],
+        "x": 1115,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "6370d9b276b93ccc",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Reboot Pre-Processing",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n////////////////////////////////////////////////////////////////////////////////////////////////////\nmsg.DSK.valid = true;\nmsg.DSK.Notification = DSK.DeviceID+ ` has received your request `+msg.author.username+ ` and has begun processing your `+(Func.Capitalize(msg.DSK.requesttype))+` request, please wait as Reboot commands can take some time to complete, the Autostart sequence will notify you when the server is coming back online....`\nmsg.payload = '-'+msg.DSK.requesttype+' -DISCORDUSER '+msg.author.username+' -DISCORDID '+msg.author.id\n////////////////////////////////////////////////////////////////////////////////////////////////////\nvar MsgSent = context.get('MsgSent') || 1;\nnode.status({fill:\"green\",shape:\"ring\",text: \"Tea's made: \"+MsgSent});\ncontext.set('MsgSent', (MsgSent + 1));\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 720,
+        "wires": [
+            [
+                "42b9060812196284",
+                "d734feb181ec7cc0"
+            ]
+        ],
+        "icon": "node-red/inject.svg"
+    },
+    {
+        "id": "6e83f69b66387b55",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Device Status",
+        "func": "////Initialize Variables\nflow.set('DSK.Ready', true);\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\nnode.status({fill:\"green\",shape:\"dot\",text:\"DEVICE READY!\"});\n\n//This line checks if the refresh command has been called, if so it does not execute the Autostart sequence.\nif((msg.DSK.requesttype == \"reload\") || msg.DSK.requesttype == \"init\") {\n    msg.channel = {\n        \"id\" : DSK.Channel.ReqChannel\n    }\n    msg.DSK.Notification = '\"'+DSK.DeviceID+ '\" has now initialized Discord Secret Knock. The device is online and ready to process requests.'\n    return msg\n    }",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 320,
+        "wires": [
+            [
+                "5a5e020631e7dac1"
+            ]
+        ]
+    },
+    {
+        "id": "5a5e020631e7dac1",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "b6eee424846be4d6",
+            "e8ef407f66609035"
+        ],
+        "x": 395,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "681e21481880ba3c",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Version Processing",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n////////////////////////////////////////////////////////////////////////////////////////////////////\nmsg.DSK.valid = true;\nmsg.DSK.Notification = \"\"\nmsg.DSK.comment = \"Cached Response\"\n////////////////////////////////////////////////////////////////////////////////////////////////////\nvar MsgSent = context.get('MsgSent') || 1;\nnode.status({fill:\"green\",shape:\"ring\",text: \"Versions checked: \"+MsgSent});\ncontext.set('MsgSent', (MsgSent + 1));\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 810,
+        "y": 900,
+        "wires": [
+            [
+                "bdcf40e66db743f9"
+            ]
+        ],
+        "icon": "node-red/inject.svg"
+    },
+    {
+        "id": "bdcf40e66db743f9",
+        "type": "template",
+        "z": "a764d58a1c34103b",
+        "name": "Version",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "```\n    -=:# Discord Secret Knock Application Dependencies #:=-\n                    \n           Windows OS Version : {{{flow.DSK.Version.Windows}}}\n           Powershell Version : {{{flow.DSK.Version.PowerShell}}}\n                  npm Version : {{{flow.DSK.Version.npm}}}\n             Node-Red Version : {{{flow.DSK.Version.node}}}\nDSK PowerShell Script Version : {{{flow.DSK.Version.DSK_PS}}}\n    DSK Node-Red Flow Version : {{{flow.DSK.Version.DSK_FLOW}}}\n\n```",
+        "output": "str",
+        "x": 955,
+        "y": 900,
+        "wires": [
+            [
+                "61f9cb69969e1b1a"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "aef0fcc433847d35",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "info Processing",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n////////////////////////////////////////////////////////////////////////////////////////////////////\nmsg.DSK.valid = true;\nmsg.DSK.Notification = \"\"\nmsg.DSK.comment = \"Cached Response\"\n////////////////////////////////////////////////////////////////////////////////////////////////////\nvar MsgSent = context.get('MsgSent') || 1;\nnode.status({fill:\"green\",shape:\"ring\",text: \"Config reviewed: \"+MsgSent});\ncontext.set('MsgSent', (MsgSent + 1));\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 960,
+        "wires": [
+            [
+                "97863c501eac43dd"
+            ]
+        ],
+        "icon": "node-red/inject.svg"
+    },
+    {
+        "id": "97863c501eac43dd",
+        "type": "template",
+        "z": "a764d58a1c34103b",
+        "name": "Version",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "```\n    -=:# Discord Secret Knock Configuration Information #:=-\n                    \n                    Device ID : {{{flow.DSK.DeviceID}}}\n                   Dynamic IP : {{{flow.DSK.DynamicIP}}}\n                 Help Enabled : {{{flow.DSK.EnableHelp}}}\n       Accept VNC Connections : {{{flow.DSK.Access.vnc}}}\n       Accept RDP Connections : {{{flow.DSK.Access.rdp}}}\n       Accept FTP Connections : {{{flow.DSK.Access.ftp}}}\n   Initial Connection TimeOut : {{{flow.DSK.TimeOut}}}{{#flow.DSK.EnableWhitelist}}\n Country Connection Whitelist : {{{flow.DSK.Whitelist}}}{{/flow.DSK.EnableWhitelist}}{{#flow.DSK.EnableBlacklist}}\n Country Connection Blacklist : {{{flow.DSK.Whitelist}}}{{/flow.DSK.EnableBlacklist}}\n\n```",
+        "output": "str",
+        "x": 955,
+        "y": 960,
+        "wires": [
+            [
+                "61f9cb69969e1b1a"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "5566c422bf81c828",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Device IP",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n\nif((DSK.DynamicIP) || (msg.DSK.requesttype == \"init\") || (msg.DSK.requesttype == \"reload\")) {\n    //Add in ipinfo.io token URL modifier\n    msg.url = \"https://ipinfo.io/json\"\n    msg.method = \"GET\"\n    return msg\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 880,
+        "wires": [
+            [
+                "517753590bf4f287"
+            ]
+        ]
+    },
+    {
+        "id": "e8ef407f66609035",
+        "type": "link in",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "links": [
+            "5a5e020631e7dac1",
+            "625a27886c361599"
+        ],
+        "x": 175,
+        "y": 880,
+        "wires": [
+            [
+                "5566c422bf81c828",
+                "8cdc3231d68126cf"
+            ]
+        ]
+    },
+    {
+        "id": "0a08802bda12402d",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Device IP",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n\n//var IPAddr = DSK.IPAddr\nnode.status({fill:\"green\",shape:\"dot\",text:\"IP:\"+flow.get('CLEARED')});\nnode.status({fill:\"green\",shape:\"dot\",text:\"IP:\"+flow.get('DSK.IPAddr')});",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "93763f58e0ddf97f",
+        "type": "link in",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "links": [
+            "7c09adeec26220db"
+        ],
+        "x": 125,
+        "y": 80,
+        "wires": [
+            [
+                "0a08802bda12402d"
+            ]
+        ]
+    },
+    {
+        "id": "76f851a0b3a8c3ae",
+        "type": "comment",
+        "z": "a764d58a1c34103b",
+        "name": "README",
+        "info": "Words go here",
+        "x": 80,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "7c09adeec26220db",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "93763f58e0ddf97f"
+        ],
+        "x": 645,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "625a27886c361599",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "01cf283ea7bbc7c9",
+            "e8ef407f66609035"
+        ],
+        "x": 1035,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "517753590bf4f287",
+        "type": "http request",
+        "z": "a764d58a1c34103b",
+        "name": "IPInfo",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 450,
+        "y": 880,
+        "wires": [
+            [
+                "afa7d4f120d96264"
+            ]
+        ]
+    },
+    {
+        "id": "afa7d4f120d96264",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Set Device IP",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\nflow.set(\"DSK.IPAddr\",msg.payload.ip)\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 585,
+        "y": 880,
+        "wires": [
+            [
+                "7c09adeec26220db",
+                "8cdc3231d68126cf"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "758b713dd44c1526",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Check IP",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n\nif((msg.DSK.authorized) && (msg.DSK.valid)) {\n    //Add in ipinfo.io token URL modifier\n    msg.url = \"https://ipinfo.io/\"+msg.DSK.access.IPAddr+\"/json\"\n    msg.method = \"GET\"\n    return msg\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 940,
+        "wires": [
+            [
+                "ca8b51b4b03c7b5d"
+            ]
+        ]
+    },
+    {
+        "id": "01cf283ea7bbc7c9",
+        "type": "link in",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "links": [
+            "625a27886c361599"
+        ],
+        "x": 175,
+        "y": 940,
+        "wires": [
+            [
+                "28fdc0ae9880c60e"
+            ]
+        ]
+    },
+    {
+        "id": "ca8b51b4b03c7b5d",
+        "type": "http request",
+        "z": "a764d58a1c34103b",
+        "name": "IPInfo",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 450,
+        "y": 940,
+        "wires": [
+            [
+                "612d5c594400f0ca"
+            ]
+        ]
+    },
+    {
+        "id": "0a6324af66395e03",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n\nif(msg.IP.bogon) {\n    msg.DSK.comment = DSK.DeviceID+\" has recieved your request, unfortunately DSK requires an external IP address (Internet Address) to be able to successfully grant access. This \"+(Func.Capitalize(msg.DSK.requesttype))+\" request has been ignored, please provide an Internet based IP address in future access requests.\"\n    msg.DSK.Notification = DSK.DeviceID+\" has recieved your request, unfortunately DSK requires an external IP address (Internet Address) to be able to successfully grant access. This \"+(Func.Capitalize(msg.DSK.requesttype))+\" request has been ignored, please provide an Internet based IP address in future access requests.\"\n    return [null,msg]\n} else {\n    if(DSK.EnableWhitelist) {\n       if((DSK.Whitelist).includes(msg.IP.country)) {\n            msg.DSK.comment = \"ACCESS GRANTED!!!\"\n            msg.DSK.Notification = DSK.DeviceID+ ` has verified your `+msg.DSK.requesttype.toUpperCase()+` command and has begun processing it. Please wait.....`\n            msg.payload = \"-\"+msg.DSK.requesttype.toUpperCase()+\" -DISCORDUSER \"+msg.author.username+\" -DiscordID \"+msg.author.id+\" -IP \"+msg.DSK.access.IPAddr\n            msg.DSK.access.Payload = msg.payload //Shows the next message to be sent to the script\n            return [msg,msg]\n       } else {\n           msg.DSK.comment = \"Access to \"+DSK.DeviceID+\" DENIED!!!\"\n           msg.DSK.Notification = \"Access to \"+DSK.DeviceID+\" DENIED!!!\"\n           return [null,msg]\n       }\n    } else {\n        if (!(DSK.Blacklist).includes(msg.IP.country)) {\n           msg.DSK.comment = \"ACCESS GRANTED!!!\"\n           msg.DSK.Notification = DSK.DeviceID+ ` has verified your `+msg.DSK.requesttype.toUpperCase()+` command and has begun processing it. Please wait.....`\n           msg.payload = \"-\"+msg.DSK.requesttype.toUpperCase()+\" -DISCORDUSER \"+msg.author.username+\" -DiscordID \"+msg.author.id+\" -IP \"+msg.DSK.access.IPAddr\n           msg.DSK.access.Payload = msg.payload //Shows the next message to be sent to the script\n           return [msg,msg]\n       } else {\n           msg.DSK.comment = \"Access to \"+DSK.DeviceID+\" DENIED!!!\"\n           msg.DSK.Notification = \"Access to \"+DSK.DeviceID+\" DENIED!!!\"\n           return [null,msg]\n       }\n    }\n}\n\n/*        \n\n      if (Func.CheckNat(msg.IP.country,DSK.Whitelist)) {\n            msg.DSK.comment = \"Nation (\"+msg.IP.country+\") Found in Whitelist(\"+DSK.Whitelist+\")\"\n            return [msg,null]\n        } else {\n            msg.DSK.comment = \"Nation (\"+msg.IP.country+\") Not found in Whitelist(\"+DSK.Whitelist+\")\"\n            return [msg,null]\n        }\n    } else {\n        return [msg,null]\n    }\n}\n\n*/",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 585,
+        "y": 940,
+        "wires": [
+            [
+                "558196be95fad532"
+            ],
+            [
+                "3760ae70a29333fa"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "612d5c594400f0ca",
+        "type": "change",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "IP",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 535,
+        "y": 940,
+        "wires": [
+            [
+                "0a6324af66395e03"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "3760ae70a29333fa",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "b6eee424846be4d6"
+        ],
+        "x": 645,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "558196be95fad532",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "ce4e609d4e9bf9a0"
+        ],
+        "x": 645,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "28fdc0ae9880c60e",
+        "type": "delay",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 225,
+        "y": 940,
+        "wires": [
+            [
+                "758b713dd44c1526"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "971fecf616fc2e34",
+        "type": "link out",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "ce4e609d4e9bf9a0"
+        ],
+        "x": 1115,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "d36a197e32ed1b05",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Shut Pre-Processing",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n////////////////////////////////////////////////////////////////////////////////////////////////////\nmsg.DSK.Notification = \"Clearing All Temporary Firewall Rules\" //Stops the Notification system from sending out a message.\nmsg.payload = \"-ClearFW\"\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 560,
+        "wires": [
+            [
+                "d734feb181ec7cc0"
+            ]
+        ],
+        "icon": "node-red/inject.svg"
+    },
+    {
+        "id": "0d27e0db2216894e",
+        "type": "function",
+        "z": "a764d58a1c34103b",
+        "name": "Shut Post-Processing",
+        "func": "////Initialize Variables\nvar Func = flow.get('Func');\nvar DSK = flow.get('DSK');\n////////////////////////////////////////////////////////////////////////////////////////////////////\nvar ttc = Func.DaysBetween((new Date(msg.data.createdTimestamp)), new Date());\nmsg.DSK.TTC = ttc\nmsg.DSK.comment = \"Request Actioned\"\nmsg.DSK.Notification = DSK.DeviceID+ ` has cleared all temporary Firewall rules. The task took `+msg.DSK.TTC+` to complete.`\n////////////////////////////////////////////////////////////////////////////////////////////////////\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 260,
+        "wires": [
+            [
+                "30b972d9963e745c"
+            ]
+        ]
+    },
+    {
+        "id": "8cdc3231d68126cf",
+        "type": "debug",
+        "z": "a764d58a1c34103b",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1270,
+        "y": 640,
+        "wires": []
+    }
+]
