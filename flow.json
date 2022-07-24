@@ -748,7 +748,7 @@
         "type": "function",
         "z": "a764d58a1c34103b",
         "name": "Discord Secret Knock Version",
-        "func": "//DO NOT MODIFY THIS DATA!! ALL DATA IS PULLED FROM THE DSK.ps1 FILE, MODIFY THE DATA THERE!!!!\nflow.set('DSK.Version.DSK_FLOW', \"v1.0f\")\nvar DSK = flow.get('DSK');\nvar StatusString = \"PowerShell - \"+DSK.Version.DSK_PS+\"  ----  Flow - \"+DSK.Version.DSK_FLOW\nnode.status({fill:\"green\",shape:\"dot\",text:StatusString});\n\n",
+        "func": "//DO NOT MODIFY THIS DATA!! ALL DATA IS PULLED FROM THE DSK.ps1 FILE, MODIFY THE DATA THERE!!!!\nflow.set('DSK.Version.DSK_FLOW', \"v1.0g\")\nvar DSK = flow.get('DSK');\nvar StatusString = \"PowerShell - \"+DSK.Version.DSK_PS+\"  ----  Flow - \"+DSK.Version.DSK_FLOW\nnode.status({fill:\"green\",shape:\"dot\",text:StatusString});\n\n",
         "outputs": 0,
         "noerr": 0,
         "initialize": "",
@@ -917,7 +917,8 @@
         "y": 440,
         "wires": [
             [
-                "7b24a93db76af73b"
+                "7b24a93db76af73b",
+                "42bb1b48eae48cab"
             ],
             [
                 "10d9a95dd6a3df86"
@@ -933,10 +934,10 @@
         "fieldType": "msg",
         "format": "handlebars",
         "syntax": "mustache",
-        "template": "{{#DSK.access.Instructions}}```\n{{{author.username}}}, your request to access {{flow.DSK.DeviceID}} has been granted. Connection Details are:\n            \n      Console Connection Type : {{{PS.RuleType}}}\n    Console Connection String : {{{flow.DSK.IPAddr}}}:{{{PS.Port}}}\n       Firewall Authorized IP : {{{DSK.access.IPAddr}}}\n\nYou have {{{flow.DSK.TimeOut}}} seconds to connect to the server before the firewall is closed.\n```\nRequest completed in {{DSK.TTC}}\n{{/DSK.access.Instructions}}\n\n{{#PS.Connected}}```\nConnection detected to {{flow.DSK.DeviceID}} from {{{DSK.access.IPAddr}}} for {{{author.username}}}. Time since request is {{DSK.TTC}}\n```{{/PS.Connected}}\n{{#PS.ExitLoop}}```\nConnection not detected, firewall rule removed for server {{flow.DSK.DeviceID}}. Total time elapsed since initial request is {{DSK.TTC}}\n```{{/PS.ExitLoop}}\n",
+        "template": "{{#DSK.access.Instructions}}```\n{{{author.username}}}, your request to access {{flow.DSK.DeviceID}} has been granted. Connection Details are:\n            \n      Console Connection Type : {{{PS.RuleType}}}\n    Console Connection String : {{{flow.DSK.IPAddr}}}:{{{PS.Port}}}\n       Firewall Authorized IP : {{{DSK.access.IPAddr}}}\n\nYou have {{{flow.DSK.TimeOut}}} seconds to connect to the server before the firewall is closed.\n```\nRequest completed in {{DSK.TTC}}\n{{/DSK.access.Instructions}}\n\n{{#PS.Connected}}```\n{{{author.username}}}'s connection detected to {{flow.DSK.DeviceID}} from {{{DSK.access.IPAddr}}}. Time since request is {{DSK.TTC}}\n```{{/PS.Connected}}\n{{#PS.ExitLoop}}```\n{{{author.username}}}'s connection not detected, firewall rule removed from {{flow.DSK.DeviceID}}. Total time elapsed since initial request is {{DSK.TTC}}\n```{{/PS.ExitLoop}}\n",
         "output": "str",
         "x": 1065,
-        "y": 400,
+        "y": 380,
         "wires": [
             [
                 "d44f338b7cb985ec"
@@ -982,11 +983,10 @@
         "septopics": true,
         "property": "PS.Status",
         "topi": "topic",
-        "x": 1015,
+        "x": 1065,
         "y": 420,
         "wires": [
             [
-                "42bb1b48eae48cab",
                 "8276fb90d4611ca8"
             ]
         ],
@@ -1239,8 +1239,7 @@
         "y": 880,
         "wires": [
             [
-                "5566c422bf81c828",
-                "8cdc3231d68126cf"
+                "5566c422bf81c828"
             ]
         ]
     },
@@ -1349,8 +1348,7 @@
         "y": 880,
         "wires": [
             [
-                "7c09adeec26220db",
-                "8cdc3231d68126cf"
+                "7c09adeec26220db"
             ]
         ],
         "l": false
@@ -1581,7 +1579,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 1270,
-        "y": 640,
+        "y": 800,
         "wires": []
     }
 ]
