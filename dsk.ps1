@@ -2,8 +2,8 @@
 #DSK.PS1 SCRIPT INFORMATION HEADER###################################################################################################################################################
 Discord Secret Knock
 Created by Josh 'OzDeaDMeaT' McDougall
-Version: v1.0f
-Date: 22-07-2022
+Version: v1.0g
+Date: 14-08-2022
 #COPYRIGHT STATEMENT#################################################################################################################################################################
 Copyright (c) 2022 Josh 'OzDeaDMeaT' McDougall, All rights reserved.
 
@@ -30,12 +30,12 @@ param(
     [string]$DISCORDUSER,                                                               #Discord username running command
     [string]$DiscordID                                                                  #Discord ID of user running command
 )
-$DSK_PS      = "v1.0f"                                                                  #Version of the DSK PowerShell script
+$DSK_PS      = "v1.0g"                                                                  #Version of the DSK PowerShell script
 #DONT EDIT INFORMATION ABOVE THIS LINE###############################################################################################################################################
 
-#USER DEVICE CONFIGURATION STARTS AT LINE 954, just after the big CONFIG 
-#USER DEVICE CONFIGURATION STARTS AT LINE 954, just after the big CONFIG 
-#USER DEVICE CONFIGURATION STARTS AT LINE 954, just after the big CONFIG 
+#USER DEVICE CONFIGURATION STARTS AT LINE 1114, just after the big CONFIG 
+#USER DEVICE CONFIGURATION STARTS AT LINE 1114, just after the big CONFIG 
+#USER DEVICE CONFIGURATION STARTS AT LINE 1114, just after the big CONFIG 
 
 #FUNCTIONS###########################################################################################################################################################################
 Function replaceLine {
@@ -1134,14 +1134,14 @@ Param (
 $DeviceID    = "DSK_Device"                                                             #The way you refer to this specific device in Discord 
 $OnlyDevice  = $false                                                                   #If $true, you do not need to specify the DeviceID when requesting access to this Device (Only set this to true if you only have 1 device using DSK)
 $CmdPrefix   = '$'                                                                      #The Command prefix the bot will look for when looking at a message before considering it a command
-$TimeOut     = 120                                                                      #Sets the amount of time the firewall will remain open with no incoming connection before removing firewall rules
+$TimeOut     = 30                                                                      #Sets the amount of time the firewall will remain open with no incoming connection before removing firewall rules
 $DynamicIP   = $false                                                                    #Marks the internet connection as a Dynamic IP Address and will cause Node-Red to keep checking what the IP Address is every time an FTP, RDP or VNC access request is made
 
 $EnableHELP  = $true                                                                    #Enable Help responses for this DSK Device (If using multiple DSK Devices in a single channel it is recommended to nominate only 1 Device to respond to Help requests)
 
 $EnableVNC   = $true			                                                        #Enables the Ability for a user to request VNC access
 $EnableRDP   = $false			                                                        #Enables the Ability for a user to request RDP access
-$EnableFTP   = $true			                                                        #Enables the Ability for a user to request FTP access
+$EnableFTP   = $false			                                                        #Enables the Ability for a user to request FTP access
 #BLACK AND WHITE LIST CONFIG#########################################################################################################################################################
 $EnableWhitelist = $true                                                                #Enables the Country Whitelist, DSK will only accept connections from these countries, ##IF SET TO FALSE, THE Blacklist WILL BE USED.##
 $Whitelist   = @("AU","NZ","US","CA","GB")                                              #Country Code Whitelist (All other countries will be blocked) can be found here https://www.iban.com/country-codes 
@@ -1149,47 +1149,17 @@ $Blacklist   = @("RU","UA","CN","IR","IQ")                                      
 
 #VNC CONFIG########################################################################################################################################### ENTER YOUR DEVICE CONFIG BELOW
 $VNC_Path	 = "C:\Program Files\RealVNC\VNC Server\vncserver.exe"						#Path to VNC Server EXE
-$VNC_Port    = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\RealVNC\vncserver" -Name 'RfbPort' -ErrorAction SilentlyContinue #RealVNC Automatic Port Collection (COMMENT OUT THIS LINE IF NOT USING RealVNC)
-#$VNC_Port    = 5900                                                                    #VNC Port if your are not using RealVNC
+$VNC_Port    = 5900                                                                    #VNC Port if your are not using RealVNC
 
 #REMOTE DESKTOP PROTOCOL CONFIG####################################################################################################################### ENTER YOUR DEVICE CONFIG BELOW
 $RDP_Port = (Get-Item "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp").GetValue('PortNumber')
 
 #FILE TRANSFER PROTOCOL CONFIG#######################################################################################################################################################
-#START OF FILEZILLA CONFIG SECTION
-#Finding Filezilla settings.xml
-$NewFilezilla = $false
-if(Test-Path "C:\ProgramData\filezilla-server\settings.xml") {
-    $FilezillaCFGFile = "C:\ProgramData\filezilla-server\settings.xml"
-	$NewFilezilla = $true
-} else {
-    if(Test-Path "C:\Windows\System32\config\systemprofile\AppData\Local\filezilla-server\settings.xml") {
-    $FilezillaCFGFile = "C:\Windows\System32\config\systemprofile\AppData\Local\filezilla-server\settings.xml"
-	} else {"NOT FOUND"}
-}
-if(Test-Path $FilezillaCFGFile) {
-    [xml]$FilezillaCFG = replaceLine -File $FilezillaCFGFile -Match "<filezilla fz:product_flavour=" -Replace "<filezilla>"
-	if($NewFilezilla) {
-		$FTP_Port    = $FilezillaCFG.filezilla.ftp_server.listener.port                     #FileZilla Config FTP Port
-		$FTP_PASV_PORT_MIN = $FilezillaCFG.filezilla.ftp_server.session.pasv.port_range.min #FileZilla Config FTP Lower Passive Mode Port
-		$FTP_PASV_PORT_MAX = $FilezillaCFG.filezilla.ftp_server.session.pasv.port_range.max #FileZilla Config FTP Upper Passive Mode Port
-	} else {
-		$FTP_Port    = $FilezillaCFG.filezilla.server.listener.port                         #FileZilla Config FTP Port
-		$FTP_PASV_PORT_MIN = $FilezillaCFG.filezilla.server.session.pasv.port_range.min     #FileZilla Config FTP Lower Passive Mode Port
-		$FTP_PASV_PORT_MAX = $FilezillaCFG.filezilla.server.session.pasv.port_range.max     #FileZilla Config FTP Upper Passive Mode Port
-	}
-} else {
-    $FTP_Port          = "Filezilla Config File not found"                                  #FileZilla Config FTP Port
-    $FTP_PASV_PORT_MIN = "Filezilla Config File not found"                                  #FileZilla Config FTP Lower Passive Mode Port
-    $FTP_PASV_PORT_MAX = "Filezilla Config File not found"                                  #FileZilla Config FTP Upper Passive Mode Port
-}
-#END OF FILEZILLA CONFIG SECTION
 $FTP_Path    = "C:\Program Files\FileZilla Server\filezilla-server.exe"                 #Path to FTP Server EXE
 $FTP_PASV    = $true                                                                    #Enables FTP Passive Mode (i.e. Your FTP incoming connections are going through a NAT router)
-#Uncomment and edit lines below if you aren't using Filezilla FTP Server
-#$FTP_Port    = 21                                                                      #FTP Port
-#$FTP_PASV_PORT_MIN = 2100                                                              #FTP Lower Passive Mode Port
-#$FTP_PASV_PORT_MAX = 2121                                                              #FTP Upper Passive Mode Port
+$FTP_Port          = "Filezilla Config File not found"                                  #FileZilla Config FTP Port
+$FTP_PASV_PORT_MIN = "Filezilla Config File not found"                                  #FileZilla Config FTP Lower Passive Mode Port
+$FTP_PASV_PORT_MAX = "Filezilla Config File not found"                                  #FileZilla Config FTP Upper Passive Mode Port
 
 #DSK ACCESS & DISCORD CONFIG#########################################################################################################################################################
 #DISCORD CHANNELS####################################################################################################################################################################
