@@ -3,7 +3,7 @@
 Discord Secret Knock
 Created by Josh 'OzDeaDMeaT' McDougall
 Version: v1.0g
-Date: 14-08-2022
+Date: 14-08-2022 bump
 #COPYRIGHT STATEMENT#################################################################################################################################################################
 Copyright (c) 2022 Josh 'OzDeaDMeaT' McDougall, All rights reserved.
 
@@ -33,9 +33,9 @@ param(
 $DSK_PS      = "v1.0g"                                                                  #Version of the DSK PowerShell script
 #DONT EDIT INFORMATION ABOVE THIS LINE###############################################################################################################################################
 
-#USER DEVICE CONFIGURATION STARTS AT LINE 1114, just after the big CONFIG 
-#USER DEVICE CONFIGURATION STARTS AT LINE 1114, just after the big CONFIG 
-#USER DEVICE CONFIGURATION STARTS AT LINE 1114, just after the big CONFIG 
+#USER DEVICE CONFIGURATION STARTS AT LINE 1114, just after the big CONFIG
+#USER DEVICE CONFIGURATION STARTS AT LINE 1114, just after the big CONFIG
+#USER DEVICE CONFIGURATION STARTS AT LINE 1114, just after the big CONFIG
 
 #FUNCTIONS###########################################################################################################################################################################
 Function replaceLine {
@@ -63,9 +63,9 @@ param(
     }
 }
 Function Out-Report {
-    <# 
-    .DESCRIPTION 
-    Automated method of outputting information in a formatted way to the CLI 
+    <#
+    .DESCRIPTION
+    Automated method of outputting information in a formatted way to the CLI
     .EXAMPLE
     Out-Report -Label "List of Variables"
     Out-Report -Label "`$CommandPrefix ==" -Data $CommandPrefix
@@ -83,7 +83,7 @@ Function Out-Report {
     [string]$CheckDisabled = "yellow",
     [string]$CheckFail = "red",
     [switch]$Override,     #only used for Compare, ignored otherwise
-    [switch]$CheckPath,     
+    [switch]$CheckPath,
     [switch]$CompareBool,
     [switch]$Bool			#Do not use CheckPath, Compare or Bool at the same time
     )
@@ -117,7 +117,7 @@ Function Out-Report {
             } else {
                 if(($Compare -eq $false) -and ($Data -eq $true)) {write-host "Disabled (Overridden due to config error)" -ForegroundColor $CheckDisabled} else {write-host "Disabled" -ForegroundColor $CheckDisabled}
                 }
-            } 
+            }
         else {
             if($Data -eq "") {
                 $Data = "NOT CONFIGURED"
@@ -128,14 +128,14 @@ Function Out-Report {
             }
 }
 Function Write-Log {
-    <# 
+    <#
     .Version 2
     Added foregroundcolor passthru as well as nonewline passthru
-    .DESCRIPTION 
+    .DESCRIPTION
     Write-Log is a simple function that dumps an output to a log file.
     .EXAMPLE
     The line below will create a log file called test.log in the current folder and populate it with 'This data is going into the log'
-    write-log -LogData "This data is going into the log" -LogFile "test.log" 
+    write-log -LogData "This data is going into the log" -LogFile "test.log"
     #>
      Param (
     [switch]$Version,
@@ -176,11 +176,11 @@ Function Write-Log {
                 if($nonewline) {write-host $LogData -foregroundcolor $foregroundcolor -nonewline} else {write-host $LogData -foregroundcolor $foregroundcolor}
                 }
             }
-        } 
+        }
     }
 Function Prompt-User {
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Prompt-User allows for a simple user prompt based on Parameters passed to it.
 #Note: The Default Option is always true. So if you use the switch -NoAsDefault it will make the return of 'no' as True. Its annoying and confusing but it is the way this Automation Host thing works. :(
 .EXAMPLE
@@ -201,14 +201,14 @@ if($Version) {
     $yes = New-Object System.Management.Automation.Host.ChoiceDescription ("&Yes", $YesHelp)
     $no = New-Object System.Management.Automation.Host.ChoiceDescription ("&No", $NoHelp)
     $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
-    $rtn = $Host.ui.PromptForChoice("", $Question, $options, $DefaultOption) 
+    $rtn = $Host.ui.PromptForChoice("", $Question, $options, $DefaultOption)
 return $rtn
 }
 Function Get-DSK {
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Gets system information on the configuration of FTP for Discord Secret Knock (DSK)
-    
+
 .EXAMPLE
 Get-FTP
 #>
@@ -235,10 +235,10 @@ param(
     return $DSK_return
 }
 Function Get-FTP{
-    <# 
-    .DESCRIPTION 
+    <#
+    .DESCRIPTION
     Gets system information on the configuration of FTP for Discord Secret Knock (DSK)
-     
+
     .EXAMPLE
     Get-FTP
     #>
@@ -267,12 +267,12 @@ Function Get-FTP{
     $FTP_return | Add-Member -MemberType NoteProperty -Name PASV_Port_Max -Value $FTP_PASV_PORT_MAX
     $FTP_return | Add-Member -MemberType NoteProperty -Name PASV -Value $FTP_PASV
     return $FTP_return
-} 
+}
 Function Get-VNC{
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Gets system information on the configuration of VNC for Discord Secret Knock (DSK)
- 
+
 .EXAMPLE
 Get-VNC
 #>
@@ -300,10 +300,10 @@ $VNC_return | Add-Member -MemberType NoteProperty -Name Path -Value $GetVNCPath
 return $VNC_return
 }
 Function Get-RDP {
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Gets system information on the configuration of RDP for Discord Secret Knock (DSK)
- 
+
 .EXAMPLE
 Get-RDP
 #>
@@ -364,8 +364,8 @@ param(
     RETURN $rtnVersion
 }
 Function Test-Command {
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Tests a command to see if it exists
 .EXAMPLE
 Test-Command npm
@@ -385,7 +385,7 @@ Catch {RETURN $false}
 Finally {$ErrorActionPreference=$oldPreference}
 }
 Function Check-DSK {
-<# 
+<#
 .DESCRIPTION
 Check-DSK Function checks if all the paths are configured correctly as well as outputting all configuration items to the CLI
  .EXAMPLE
@@ -495,8 +495,8 @@ Out-Report -Label "  REBOOT (REBOOTPerm) ==" -Data $REBOOTPerm
 write-host " "
 }
 Function Prepare-Config {
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Prepares the configuration information in dsk.ps1 into a standardized structure for Node-Red to interprit.
 Returns a PowerShell Object of all the configuration information
  .EXAMPLE
@@ -520,7 +520,7 @@ if($Version) {
     $Config | Add-Member -MemberType NoteProperty -Name ftp -Value (Get-FTP)
     $Config | Add-Member -MemberType NoteProperty -Name rdp -Value (Get-RDP)
     $Config | Add-Member -MemberType NoteProperty -Name vnc -Value (Get-VNC)
-    
+
     $Perms = $null
     $Perms = New-Object -TypeName psobject
     $Perms | Add-Member -MemberType NoteProperty -Name vnc -Value $VNCPerm
@@ -533,7 +533,7 @@ if($Version) {
     $Perms | Add-Member -MemberType NoteProperty -Name reload -Value $RELOADPerm
     $Perms | Add-Member -MemberType NoteProperty -Name reboot -Value $REBOOTPerm
     $Perms | Add-Member -MemberType NoteProperty -Name shut -Value $SHUTPerm
-        
+
     $Channel = $null
     $Channel = New-Object -TypeName psobject
     $Channel | Add-Member -MemberType NoteProperty -Name LogChannel -Value $LOGCHANNEL
@@ -552,7 +552,7 @@ if($Version) {
     $DSK | Add-Member -MemberType NoteProperty -Name Config -Value $Config
     $DSK | Add-Member -MemberType NoteProperty -Name Channel -Value $Channel
     $DSK | Add-Member -MemberType NoteProperty -Name Access -Value $Access
-        
+
     $DSK | Add-Member -MemberType NoteProperty -Name Permissions -Value $Perms
     $DSK | Add-Member -MemberType NoteProperty -Name EnableWhitelist -Value $EnableWhitelist
     $DSK | Add-Member -MemberType NoteProperty -Name Whitelist -Value $Whitelist
@@ -561,8 +561,8 @@ if($Version) {
 return $DSK
 }
 Function Get-FirewallRule {
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Returns information about a firewall rule
 .EXAMPLE
 Get-FirewallRule -Name "Test Firewall Rule Alpha 1"
@@ -604,8 +604,8 @@ $rtn | Add-Member -MemberType NoteProperty -Name SearchName -Value $Name
 return $rtn
 }
 Function Simple-Split {
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Simple Split Function
 .EXAMPLE
 $newSubString = Simple-Split - Elephatns
@@ -630,8 +630,8 @@ if($Version) {
 return $rtn
 }
 Function Setup-Firewall-FTPPort {
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Automatic setup of Firewall Rulkes for Discord Secret Knock FTP
 #Note: The Default Option is always true. So if you use the switch -NoAsDefault it will make the return of 'no' as True. Its annoying and confusing but it is the way this Automation Host thing works. :(
 .EXAMPLE
@@ -652,7 +652,7 @@ if($Version) {
 	return "v1.0a"
 }
 $RULEGROUP = 'File and Printer Sharing'
-write-log -LogData "Setup-Firewall-FTPPort Starting" 
+write-log -LogData "Setup-Firewall-FTPPort Starting"
 Out-Report -Label "  Checking FTP Path ==" -Data $Path -CheckPath
 	if(Test-Path $Path) {
 		$Dtime = (get-date).DateTime
@@ -699,7 +699,7 @@ Out-Report -Label "  Checking FTP Path ==" -Data $Path -CheckPath
 													-ErrorAction SilentlyContinue
 						write-log -LogData "  FTP PASSIVE UDP Firewall Rule updated!"
 						write-log -LogData " DONT FORGET TO DISABLE THE DEFAULT FIREWALL RULES FOR FTP (If there are any)"
-						write-log -LogData "Setup-Firewall-FTPPort reports 'JOB DONE'"                        
+						write-log -LogData "Setup-Firewall-FTPPort reports 'JOB DONE'"
 					} else {
 						$shhh = Set-NetFirewallRule -NewDisplayName $RuleName `
 													-Description $UPDATED_RULE_DESCRIPTION `
@@ -715,7 +715,7 @@ Out-Report -Label "  Checking FTP Path ==" -Data $Path -CheckPath
 						$RuleName = "$RULE_NAME_PREFIX$Port UDP"
 						$RuleameCheck = Get-FirewallRule -Name $RuleName
 						$UPDATED_RULE_DESCRIPTION = ($RuleNameCheck.Description).Split(' --')[0] + " -- Last Updated on $Dtime"
-						$shhh = Set-NetFirewallRule -NewDisplayName $RuleName 
+						$shhh = Set-NetFirewallRule -NewDisplayName $RuleName
 													-Description $UPDATED_RULE_DESCRIPTION `
 													-Program $Path `
 													-Direction Inbound `
@@ -867,7 +867,7 @@ if($Version) {
             write-log -LogData "  Creating RDP TCP Firewall Rule - $RULE_NAME_PREFIX$Port TCP"
             $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port UDP" -DisplayName "$RULE_NAME_PREFIX$Port UDP" -Description $RULE_DESCRIPTION -Direction Inbound -LocalPort $Port -Protocol UDP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\svchost.exe -Group 'Remote Desktop'
             write-log -LogData "  Creating RDP UDP Firewall Rule - $RULE_NAME_PREFIX$Port UDP"
-            $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port Shadow TCP" -DisplayName "$RULE_NAME_PREFIX$Port Shadow TCP" -Description $RULE_DESCRIPTION -Direction Inbound -Protocol TCP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\RdpSa.exe -Group 'Remote Desktop'    
+            $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX$Port Shadow TCP" -DisplayName "$RULE_NAME_PREFIX$Port Shadow TCP" -Description $RULE_DESCRIPTION -Direction Inbound -Protocol TCP -RemoteAddress $IP -Action Allow -Program %SystemRoot%\system32\RdpSa.exe -Group 'Remote Desktop'
             write-log -LogData "  Creating RDP Shadow TCP Firewall Rule - $RULE_NAME_PREFIX$Port Shadow TCP"
             write-log -LogData " DONT FORGET TO DISABLE THE DEFAULT FIREWALL RULES FOR RDP"
             write-log -LogData "Setup-Firewall-RDPPort reports 'JOB DONE'"
@@ -879,8 +879,8 @@ if($Version) {
     }
 }
 Function Setup-Firewall-VNCPort {
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Automatic setup of Firewall Rulkes for Discord Secret Knock VNC
 #Note: The Default Option is always true. So if you use the switch -NoAsDefault it will make the return of 'no' as True. Its annoying and confusing but it is the way this Automation Host thing works. :(
 .EXAMPLE
@@ -895,7 +895,7 @@ Param (
 if($Version) {
     return "v1.0a"
 }
-write-log -LogData "Setup-Firewall-VNCPort Starting" 
+write-log -LogData "Setup-Firewall-VNCPort Starting"
 Out-Report -Label "  Checking VNC Path ==" -Data $Path -CheckPath
     if(Test-Path $Path) {
         $Dtime = (get-date).DateTime
@@ -962,8 +962,8 @@ Out-Report -Label "  Checking VNC Path ==" -Data $Path -CheckPath
     }
 }
 Function Set-Firewall {
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Modifies the devices Firewall
 .EXAMPLE
 Mode 1: FTP, RDP, VNC (Open)
@@ -1019,7 +1019,7 @@ $RULE_NAME_PREFIX = "$RULEPREFIX$DiscordID -"
 $RULE_DISPLAYNAME_PREFIX = "$RULEPREFIX$USER -"
 $RULE_DESCRIPTION = "AutoGenerated Firewall Rule for $USER with Discord ID $DiscordID on date $Time"
 
-$OutputVar = New-Object -TypeName psobject 
+$OutputVar = New-Object -TypeName psobject
 $OutputVar | Add-Member -MemberType NoteProperty -Name Status -Value "UNKNOWN"
 $OutputVar | Add-Member -MemberType NoteProperty -Name RuleType -Value $RULETYPE
 $OutputVar | Add-Member -MemberType NoteProperty -Name Name -Value $USER
@@ -1096,7 +1096,7 @@ if($Shut) {
         $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX VNC-TCP" -DisplayName "$RULE_DISPLAYNAME_PREFIX TCP" -Description $RULE_DESCRIPTION -Direction Inbound -LocalPort $VNC_Port -Protocol TCP -RemoteAddress $IP -Action Allow -Program $VNC_Path -Group $RULEGROUP
         $shhh = New-NetFirewallRule -Name "$RULE_NAME_PREFIX VNC-UDP" -DisplayName "$RULE_DISPLAYNAME_PREFIX UDP" -Description $RULE_DESCRIPTION -Direction Inbound -LocalPort $VNC_Port -Protocol UDP -RemoteAddress $IP -Action Allow -Program $VNC_Path -Group $RULEGROUP
         $OutputVar.Status = "Open"
-    }                
+    }
 }
 return $OutputVar
 }
@@ -1118,8 +1118,8 @@ Param (
 #   CC:::::::::::::::C  OO:::::::::::::OO  N::::::::N      N::::::N F::::::::::::::::::::F I::::::::I   GG:::::::::::::::G
 #  C:::::CCCCCCCC::::C O:::::::OOO:::::::O N:::::::::N     N::::::N FF::::::FFFFFFFFF::::F II::::::II  G:::::GGGGGGGG::::G
 # C:::::C       CCCCCC O::::::O   O::::::O N::::::::::N    N::::::N   F:::::F       FFFFFF   I::::I   G:::::G       GGGGGG
-#C:::::C               O:::::O     O:::::O N:::::::::::N   N::::::N   F:::::F                I::::I  G:::::G              
-#C:::::C               O:::::O     O:::::O N:::::::N::::N  N::::::N   F::::::FFFFFFFFFF      I::::I  G:::::G              
+#C:::::C               O:::::O     O:::::O N:::::::::::N   N::::::N   F:::::F                I::::I  G:::::G
+#C:::::C               O:::::O     O:::::O N:::::::N::::N  N::::::N   F::::::FFFFFFFFFF      I::::I  G:::::G
 #C:::::C               O:::::O     O:::::O N::::::N N::::N N::::::N   F:::::::::::::::F      I::::I  G:::::G    GGGGGGGGGG
 #C:::::C               O:::::O     O:::::O N::::::N  N::::N:::::::N   F:::::::::::::::F      I::::I  G:::::G    G::::::::G
 #C:::::C               O:::::O     O:::::O N::::::N   N:::::::::::N   F::::::FFFFFFFFFF      I::::I  G:::::G    GGGGG::::G
@@ -1131,7 +1131,7 @@ Param (
 #        CCCCCCCCCCCCC      OOOOOOOOO      NNNNNNNN         NNNNNNN FFFFFFFFFFF            IIIIIIIIII        GGGGGG  GGGG
 #####################################################################################################################################################################################
 #IDENTITY & SERVER CONFIG############################################################################################################################# ENTER YOUR DEVICE CONFIG BELOW
-$DeviceID    = "DSK_Device"                                                             #The way you refer to this specific device in Discord 
+$DeviceID    = "DSK_Device"                                                             #The way you refer to this specific device in Discord
 $OnlyDevice  = $false                                                                   #If $true, you do not need to specify the DeviceID when requesting access to this Device (Only set this to true if you only have 1 device using DSK)
 $CmdPrefix   = '$'                                                                      #The Command prefix the bot will look for when looking at a message before considering it a command
 $TimeOut     = 30                                                                      #Sets the amount of time the firewall will remain open with no incoming connection before removing firewall rules
@@ -1144,8 +1144,8 @@ $EnableRDP   = $false			                                                        
 $EnableFTP   = $false			                                                        #Enables the Ability for a user to request FTP access
 #BLACK AND WHITE LIST CONFIG#########################################################################################################################################################
 $EnableWhitelist = $true                                                                #Enables the Country Whitelist, DSK will only accept connections from these countries, ##IF SET TO FALSE, THE Blacklist WILL BE USED.##
-$Whitelist   = @("AU","NZ","US","CA","GB")                                              #Country Code Whitelist (All other countries will be blocked) can be found here https://www.iban.com/country-codes 
-$Blacklist   = @("RU","UA","CN","IR","IQ")                                              #Country Code Blacklist (All other countries will be allowed) can be found here https://www.iban.com/country-codes 
+$Whitelist   = @("AU","NZ","US","CA","GB")                                              #Country Code Whitelist (All other countries will be blocked) can be found here https://www.iban.com/country-codes
+$Blacklist   = @("RU","UA","CN","IR","IQ")                                              #Country Code Blacklist (All other countries will be allowed) can be found here https://www.iban.com/country-codes
 
 #VNC CONFIG########################################################################################################################################### ENTER YOUR DEVICE CONFIG BELOW
 $VNC_Path	 = "C:\Program Files\RealVNC\VNC Server\vncserver.exe"						#Path to VNC Server EXE
@@ -1240,7 +1240,7 @@ if($FTP) {
         $REQUEST_TYPE = "FTP (Shut Requested)"
         write-log -LogData "REQUEST: $REQUEST_TYPE  REQUESTOR: $DISCORDUSER ($DISCORDID)" -Silent
         $DSKreturn = Set-Firewall -FTP -IP $IP -USER $DISCORDUSER -DiscordID $DiscordID -Shut
-        $DSKreturnJSON = $DSKreturn | ConvertTo-Json -Depth 100        
+        $DSKreturnJSON = $DSKreturn | ConvertTo-Json -Depth 100
     } else {
         $REQUEST_TYPE = "FTP (Open Requested)"
         write-log -LogData "REQUEST: $REQUEST_TYPE  REQUESTOR: $DISCORDUSER ($DISCORDID)" -Silent
